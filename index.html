@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="login-overlay auth-page" id="loginOverlay">
+    <div class="login-shell">
+      <aside class="login-brand">
+        <div class="login-brand-inner">
+          <div class="brand-logo-lg"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+          <h1>JobTracker Pro</h1>
+          <p class="brand-tagline">Your job search, organized.</p>
+          <p class="brand-desc">Track applications, interviews, follow-ups and offers in one place.</p>
+          <ul class="brand-features">
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Application Tracking</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Interview Management</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Follow-up Reminders</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Career Analytics</li>
+          </ul>
+          <p class="brand-note">Works offline · Data stays in your browser</p>
+        </div>
+      </aside>
+      <div class="login-panel">
+        <div class="login-card" id="signInView">
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+            <h2>Welcome back</h2>
+            <p>Sign in to continue managing your job applications</p>
+          </div>
+          <form id="loginForm" class="auth-form" autocomplete="on" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="loginUsername">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                <input class="auth-input" type="text" id="loginUsername" placeholder="Enter username" autocomplete="username">
+              </div>
+              <span class="auth-error" id="loginUserErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="loginPassword">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+                <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="loginPassErr"></span>
+            </div>
+            <div class="login-error" id="loginError" hidden></div>
+            <div class="login-options">
+              <label class="remember-me"><input type="checkbox" id="rememberMe"> Remember me</label>
+              <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
+            </div>
+            <button type="submit" class="btn btn-primary login-btn" id="loginSubmitBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+          </form>
+          <p class="login-switch">Don't have an account? <button type="button" class="link-btn" id="showRegister">Create account</button></p>
+          <div class="demo-box">
+            <span class="demo-label">Demo account</span>
+            <span class="demo-creds">admin / admin123</span>
+          </div>
+        </div>
+        <div class="login-card" id="registerView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-user-plus" aria-hidden="true"></i></div>
+            <h2>Create your account</h2>
+            <p>Set up your private JobTracker workspace</p>
+          </div>
+          <form id="registerForm" class="auth-form" autocomplete="on" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="regName">Full Name</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                <input class="auth-input" type="text" id="regName" placeholder="Enter your full name" autocomplete="name">
+              </div>
+              <span class="auth-error" id="regNameErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regUsername">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-at"></i></span>
+                <input class="auth-input" type="text" id="regUsername" placeholder="Choose a username" autocomplete="username">
+              </div>
+              <span class="auth-error" id="regUserErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regEmail">Email</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                <input class="auth-input" type="email" id="regEmail" placeholder="Enter your email" autocomplete="email">
+              </div>
+              <span class="auth-error" id="regEmailErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regPassword">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="regPassword" placeholder="Create a password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleRegPassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="pwd-strength" id="pwdStrength" hidden>
+                <div class="pwd-bar"><span id="pwdBarFill"></span></div>
+                <span class="pwd-label" id="pwdLabel">Weak</span>
+              </div>
+              <span class="auth-error" id="regPassErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regConfirm">Confirm Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="regConfirm" placeholder="Confirm your password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleRegConfirm" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="regConfirmErr"></span>
+            </div>
+            <div class="login-error" id="registerError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn"><i class="fas fa-user-plus"></i> Create Account</button>
+          </form>
+          <p class="login-switch">Already have an account? <button type="button" class="link-btn" id="showSignIn">Sign in</button></p>
+        </div>
+
+        <div class="login-card" id="forgotView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-lock" aria-hidden="true"></i></div>
+            <h2>Forgot password</h2>
+            <p>Enter the email associated with your JobTracker Pro account. We will send your login details.</p>
+          </div>
+          <form id="forgotForm" class="auth-form" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="forgotEmail">Email address</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                <input class="auth-input" type="email" id="forgotEmail" placeholder="Enter your registered email" autocomplete="email">
+              </div>
+              <span class="auth-error" id="forgotEmailErr"></span>
+            </div>
+            <div class="login-error" id="forgotError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn" id="forgotSubmitBtn"><i class="fas fa-paper-plane"></i> Send Login Details</button>
+          </form>
+          <p class="login-switch"><button type="button" class="link-btn" id="forgotBackSignIn">Back to Sign In</button></p>
+        </div>
+
+        <div class="login-card" id="forgotSentView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-envelope-open-text" aria-hidden="true"></i></div>
+            <h2 id="forgotSentTitle">Login details</h2>
+            <p id="forgotSentMsg">Your login credentials are shown below.</p>
+          </div>
+          <div class="demo-box" id="credsRecoveryBox" hidden>
+            <span class="demo-label">Your account credentials</span>
+            <div class="cred-row"><span>Username</span><strong id="recoveredUsername">—</strong></div>
+            <div class="cred-row"><span>Password</span><strong id="recoveredPassword">—</strong></div>
+            <p class="cred-note" id="emailSendNote"></p>
+          </div>
+          <div class="login-error" id="forgotNotFoundBox" hidden>No account was found for that email address.</div>
+          <button type="button" class="btn btn-primary login-btn" id="forgotSentBack"><i class="fas fa-arrow-right-to-bracket"></i> Back to Sign In</button>
+        </div>
+
+        <div class="login-card" id="resetView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
+            <h2>Reset password</h2>
+            <p>Create a new password for your account</p>
+          </div>
+          <form id="resetForm" class="auth-form" novalidate>
+            <input type="hidden" id="resetToken">
+            <div class="auth-field">
+              <label class="auth-label" for="resetPassword">New Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="resetPassword" placeholder="Create a new password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleResetPassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="pwd-strength" id="resetPwdStrength" hidden>
+                <div class="pwd-bar"><span id="resetPwdBarFill"></span></div>
+                <span class="pwd-label" id="resetPwdLabel">Weak</span>
+              </div>
+              <span class="auth-error" id="resetPassErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="resetConfirm">Confirm Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="resetConfirm" placeholder="Confirm new password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleResetConfirm" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="resetConfirmErr"></span>
+            </div>
+            <div class="login-error" id="resetError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn"><i class="fas fa-check"></i> Reset Password</button>
+          </form>
+          <p class="login-switch"><button type="button" class="link-btn" id="resetBackSignIn">Back to Sign In</button></p>
+        </div>
+
+        <div class="login-card" id="resetSuccessView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
+            <h2>Password reset successfully</h2>
+            <p>Your password has been changed. Please sign in with your new password.</p>
+          </div>
+          <button type="button" class="btn btn-primary login-btn" id="resetSuccessSignIn"><i class="fas fa-arrow-right-to-bracket"></i> Back to Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer" hidden>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-briefcase"></i>
+        <span class="logo-text">JobTracker Pro</span>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close menu"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a href="#" class="nav-item active" data-page="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="#" class="nav-item" data-page="applications"><i class="fas fa-table"></i><span>All Applications</span><span class="nav-badge" id="badgeApps">0</span></a>
+        <a href="#" class="nav-item" data-page="add"><i class="fas fa-plus-circle"></i><span>Add Application</span></a>
+        <a href="#" class="nav-item" data-page="pipeline"><i class="fas fa-columns"></i><span>Pipeline</span></a>
+        <a href="#" class="nav-item" data-page="interviews"><i class="fas fa-calendar-check"></i><span>Interviews</span><span class="nav-badge badge-warn" id="badgeInterviews">0</span></a>
+        <a href="#" class="nav-item" data-page="followups"><i class="fas fa-bell"></i><span>Follow-ups</span><span class="nav-badge badge-danger" id="badgeFollowups">0</span></a>
+        <a href="#" class="nav-item" data-page="analytics"><i class="fas fa-chart-line"></i><span>Analytics</span></a>
+        <a href="#" class="nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i><span>Dark Mode</span></button>
+        <button type="button" class="theme-toggle logout-btn" id="logoutBtn" title="Logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-nav">
+        <button type="button" class="hamburger" id="hamburger" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <div class="top-nav-right">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="search" id="globalSearch" placeholder="Search company, role, recruiter..." aria-label="Search applications">
+          </div>
+          <div class="date-badge" id="currentDate"></div>
+          <button type="button" class="icon-btn" id="themeToggleHeader" aria-label="Toggle dark mode" title="Theme"><i class="fas fa-moon"></i></button>
+          <div class="notif-wrap">
+            <button type="button" class="icon-btn" id="notifBell" aria-label="Notifications" title="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="badge-count" id="notifCount" data-count="0">0</span>
+            </button>
+            <div class="notif-panel" id="notifPanel" hidden role="dialog" aria-label="Notifications">
+              <div class="notif-panel-header">
+                <h3>Notifications</h3>
+                <button type="button" class="btn btn-sm btn-outline" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notif-panel-body" id="notifList"></div>
+            </div>
+          </div>
+          <div class="export-wrap">
+            <button type="button" class="btn btn-primary btn-sm" id="exportBtn" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-download"></i> Export <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="export-menu" id="exportMenu" hidden>
+              <button type="button" onclick="exportJSON()"><i class="fas fa-file-code"></i> JSON Backup</button>
+              <button type="button" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+              <button type="button" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+          </div>
+          <div class="user-menu-wrap">
+            <button type="button" class="user-menu-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="User menu">
+              <span class="user-avatar" id="userAvatar">A</span>
+              <span class="user-name" id="userDisplayName">User</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-menu" id="userMenu" hidden>
+              <button type="button" onclick="navigateTo('settings'); closeUserMenu();"><i class="fas fa-user"></i> Profile &amp; Settings</button>
+              <button type="button" id="userMenuLogout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="card-header-row">
+              <h3>Applications by Status</h3>
+              <button type="button" class="btn btn-sm btn-outline" id="resetFilterBtn" style="display:none" onclick="resetDashboardFilter()">Reset</button>
+            </div>
+            <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Location</h3>
+            <div class="chart-wrap"><canvas id="locationChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Month</h3>
+            <div class="chart-wrap"><canvas id="monthChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Top Companies</h3>
+            <div class="chart-wrap"><canvas id="companyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="dashboard-bottom">
+          <div class="card">
+            <h3>Interview Pipeline</h3>
+            <div class="chart-wrap"><canvas id="pipelineChart"></canvas></div>
+          </div>
+          <div class="card insights-card">
+            <h3><i class="fas fa-lightbulb"></i> Job Search Insights</h3>
+            <div id="insightsList"></div>
+          </div>
+        </div>
+        <div class="dashboard-events">
+          <div class="card">
+            <h3><i class="fas fa-calendar-check"></i> Upcoming Interviews</h3>
+            <div id="upcomingInterviews"></div>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-clock"></i> Upcoming Follow-ups</h3>
+            <div id="upcomingFollowups"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Recent Applications</h3>
+            <button type="button" class="btn btn-sm btn-outline" onclick="navigateTo('applications')">View All</button>
+          </div>
+          <div class="table-responsive" id="recentAppsTable"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-applications">
+        <div class="filters-bar">
+          <select id="filterStatus" aria-label="Filter by status"><option value="">All Statuses</option></select>
+          <select id="filterLocation" aria-label="Filter by location"><option value="">All Locations</option></select>
+          <select id="filterWorkMode" aria-label="Filter by work mode"><option value="">All Work Modes</option></select>
+          <select id="filterSource" aria-label="Filter by source"><option value="">All Sources</option></select>
+          <select id="filterRound" aria-label="Filter by round"><option value="">All Rounds</option></select>
+          <input type="date" id="filterDateFrom" title="From date" aria-label="From date">
+          <input type="date" id="filterDateTo" title="To date" aria-label="To date">
+          <button type="button" class="btn btn-sm btn-outline" onclick="clearFilters()">Clear Filters</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="appsTable">
+            <thead>
+              <tr>
+                <th>ID</th><th>Date</th><th>Company</th><th>Job Title</th><th>Location</th>
+                <th>Mode</th><th>Status</th><th>Round</th><th>Interview</th><th>Follow-up</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page" id="page-add">
+        <div class="card form-card">
+          <h3 id="formTitle">Add New Application</h3>
+          <form id="appForm" novalidate>
+            <input type="hidden" id="editId">
+            <div class="form-grid form-grid-4">
+              <div class="form-group">
+                <label for="fId">Application ID <span class="req">*</span></label>
+                <input type="text" id="fId" placeholder="e.g. SEP-005" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fAppDate">Application Date <span class="req">*</span></label>
+                <input type="date" id="fAppDate" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fCompany">Company Name <span class="req">*</span></label>
+                <input type="text" id="fCompany" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fTitle">Job Title / Position <span class="req">*</span></label>
+                <input type="text" id="fTitle" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fLocation">Job Location</label>
+                <input type="text" id="fLocation" placeholder="Pune, IN">
+              </div>
+              <div class="form-group">
+                <label for="fWorkMode">Work Mode</label>
+                <select id="fWorkMode">
+                  <option value="">Select</option>
+                  <option>Remote</option><option>Hybrid</option><option>On-site</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fHrName">Recruiter / HR Name</label>
+                <input type="text" id="fHrName">
+              </div>
+              <div class="form-group">
+                <label for="fHrPhone">HR Contact</label>
+                <input type="tel" id="fHrPhone" placeholder="10 digits">
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fHrEmail">HR Email</label>
+                <input type="email" id="fHrEmail">
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fSource">Application Source</label>
+                <select id="fSource">
+                  <option value="">Select</option>
+                  <option>LinkedIn</option><option>Naukri</option><option>Indeed</option>
+                  <option>Company Website</option><option>Referral</option><option>Consultancy</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fStatus">Application Status</label>
+                <select id="fStatus">
+                  <option>Wishlist</option><option selected>Applied</option>
+                  <option>Submitted - Pending Response</option><option>HR Screening</option>
+                  <option>Interviewing</option><option>Technical Round</option>
+                  <option>Managerial Round</option><option>HR Round</option><option>Final Round</option>
+                  <option>Offer Received</option><option>Accepted</option>
+                  <option>On Hold</option><option>Rejected</option><option>Withdrawn</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fRound">Interview Round</label>
+                <select id="fRound">
+                  <option>Not Started</option><option>HR Screening</option><option>1st Round</option>
+                  <option>2nd Round</option><option>Technical Round</option><option>Managerial Round</option>
+                  <option>HR Round</option><option>Final Round</option><option>Completed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fIntDate">Interview Date</label>
+                <input type="date" id="fIntDate">
+              </div>
+              <div class="form-group">
+                <label for="fIntTime">Interview Time</label>
+                <input type="time" id="fIntTime">
+              </div>
+              <div class="form-group">
+                <label for="fSalary">Expected Salary</label>
+                <input type="text" id="fSalary" placeholder="7 LPA / 3500000">
+              </div>
+              <div class="form-group">
+                <label for="fFollowDate">Next Follow-up Date</label>
+                <input type="date" id="fFollowDate">
+              </div>
+              <div class="form-group">
+                <label for="fFollowStatus">Follow-up Status</label>
+                <select id="fFollowStatus">
+                  <option>Not Due</option><option>Due</option><option>Overdue</option>
+                  <option>Completed</option><option>No Response Needed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fOfferStatus">Offer Status</label>
+                <select id="fOfferStatus">
+                  <option>Not Applicable</option><option>Pending</option><option>Received</option>
+                  <option>Accepted</option><option>Declined</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label for="fNotes">Notes / Remarks</label>
+                <textarea id="fNotes" rows="3"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Application</button>
+              <button type="button" class="btn btn-outline" onclick="cancelForm()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="page" id="page-interviews">
+        <div class="card">
+          <h3>Interview Tracking</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr><th>Company</th><th>Job Title</th><th>Round</th><th>Date</th><th>Time</th><th>Status</th><th>Notes</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="interviewsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-followups">
+        <div class="followup-sections">
+          <div class="card">
+            <h3 class="text-danger"><i class="fas fa-exclamation-circle"></i> Overdue Follow-ups</h3>
+            <div id="overdueFollowups"></div>
+          </div>
+          <div class="card">
+            <h3 class="text-warning"><i class="fas fa-clock"></i> Due Today</h3>
+            <div id="todayFollowups"></div>
+          </div>
+          <div class="card">
+            <h3 class="text-success"><i class="fas fa-calendar"></i> Upcoming Follow-ups</h3>
+            <div id="futureFollowups"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-pipeline">
+        <div class="kanban-board" id="kanbanBoard"></div>
+      </section>
+
+      <section class="page" id="page-analytics">
+        <div class="kpi-grid" id="analyticsKpis"></div>
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <h3>Applications by Status</h3>
+            <div class="chart-wrap"><canvas id="analyticsStatusChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Location</h3>
+            <div class="chart-wrap"><canvas id="analyticsLocationChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Month</h3>
+            <div class="chart-wrap"><canvas id="analyticsMonthChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Top Companies</h3>
+            <div class="chart-wrap"><canvas id="analyticsCompanyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="dashboard-bottom">
+          <div class="card">
+            <h3>Interview Pipeline</h3>
+            <div class="chart-wrap"><canvas id="analyticsPipelineChart"></canvas></div>
+          </div>
+          <div class="card insights-card">
+            <h3><i class="fas fa-lightbulb"></i> Job Search Insights</h3>
+            <div id="analyticsInsightsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="card">
+          <h3><i class="fas fa-user-shield"></i> Account &amp; Credentials</h3>
+          <p class="hint" style="margin-bottom:1rem">Change login username and password (stored in this browser only).</p>
+          <form id="credentialsForm" class="form-grid" style="max-width:520px">
+            <div class="form-group">
+              <label for="credUsername">Username</label>
+              <input type="text" id="credUsername" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="credCurrentPassword">Current Password</label>
+              <input type="password" id="credCurrentPassword" required autocomplete="current-password">
+            </div>
+            <div class="form-group">
+              <label for="credNewPassword">New Password</label>
+              <input type="password" id="credNewPassword" minlength="4" autocomplete="new-password" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group">
+              <label for="credConfirmPassword">Confirm New Password</label>
+              <input type="password" id="credConfirmPassword" minlength="4" autocomplete="new-password">
+            </div>
+            <div class="form-group full-width">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Credentials</button>
+            </div>
+          </form>
+        </div>
+        <div class="card">
+          <h3>Data Management</h3>
+          <div class="settings-actions">
+            <button type="button" class="btn btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> Backup (JSON)</button>
+            <button type="button" class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <button type="button" class="btn btn-primary" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
+            <label class="btn btn-outline file-btn">
+              <i class="fas fa-upload"></i> Import / Restore
+              <input type="file" id="importFile" accept=".json,.csv,.xlsx,.xls" hidden>
+            </label>
+            <button type="button" class="btn btn-danger" onclick="clearAllData()"><i class="fas fa-trash"></i> Clear All Data</button>
+          </div>
+          <p class="hint">Import accepts JSON, CSV, or Excel. Data is merged by Application ID.</p>
+        </div>
+        <div class="card">
+          <h3>About</h3>
+          <p>JobTracker Pro — job application tracker. Data is stored locally in your browser.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="viewModal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Application Details</h3>
+        <button type="button" class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="viewModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="viewEditBtn">Edit</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h3>Confirm</h3>
+        <button type="button" class="modal-close" onclick="closeConfirm()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="confirmBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="confirmYes">Yes</button>
+        <button type="button" class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="script.js"></script>
+</body>
+</html>
