@@ -1,0 +1,4486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+:root {
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --sidebar-bg: #0f172a;
+  --sidebar-hover: rgba(255,255,255,0.06);
+  --sidebar-active: rgba(59,130,246,0.18);
+  --sidebar-text: #94a3b8;
+  --background: #f1f5f9;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --purple: #8b5cf6;
+  --cyan: #06b6d4;
+  --orange: #f97316;
+  --shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --sidebar-w: 240px;
+}
+
+[data-theme="dark"] {
+  --background: #0f172a;
+  --card-bg: #1e293b;
+  --border: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --sidebar-bg: #020617;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.5;
+  font-size: 14px;
+  overflow-x: hidden;
+}
+
+.app-container { display: flex; min-height: 100vh; }
+.app-container[hidden] { display: none !important; }
+
+/* ===== Auth pages (scoped under .auth-page) ===== */
+.auth-page.login-overlay {
+  position: fixed; inset: 0; z-index: 5000;
+  display: flex; align-items: stretch; justify-content: center;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef4ff 100%);
+}
+[data-theme="dark"] .auth-page.login-overlay {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+.login-overlay[hidden] { display: none !important; }
+
+.auth-page .login-shell {
+  display: grid; grid-template-columns: 1fr 1fr;
+  width: 100%; min-height: 100vh;
+}
+.auth-page .login-brand {
+  background: linear-gradient(160deg, #0f172a 0%, #1e3a5f 50%, #1d4ed8 130%);
+  color: #e2e8f0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 3rem 2.5rem;
+  position: relative; overflow: hidden;
+}
+.auth-page .login-brand::before {
+  content: ''; position: absolute; width: 320px; height: 320px;
+  border-radius: 50%; background: rgba(255,255,255,0.04);
+  top: -80px; right: -60px; pointer-events: none;
+}
+.auth-page .login-brand-inner { max-width: 380px; position: relative; z-index: 1; }
+.auth-page .brand-logo-lg {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; color: #fff; margin-bottom: 1.25rem;
+}
+.auth-page .login-brand h1 {
+  font-size: 1.9rem; font-weight: 700; color: #fff;
+  letter-spacing: -0.03em; margin-bottom: 0.4rem;
+}
+.auth-page .brand-tagline {
+  font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 0.5rem;
+}
+.auth-page .brand-desc {
+  font-size: 0.95rem; color: #94a3b8; line-height: 1.55; margin-bottom: 1.75rem;
+}
+.auth-page .brand-features {
+  list-style: none; display: flex; flex-direction: column; gap: 0.7rem;
+  margin-bottom: 2rem;
+}
+.auth-page .brand-features li {
+  display: flex; align-items: center; gap: 0.65rem;
+  font-size: 0.9rem; color: #cbd5e1;
+}
+.auth-page .brand-features i { color: #34d399; font-size: 0.95rem; flex-shrink: 0; }
+.auth-page .brand-note { font-size: 0.8rem; color: #64748b; }
+
+.auth-page .login-panel {
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+}
+.auth-page .login-card {
+  width: 100%; max-width: 440px;
+  background: #ffffff; border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  padding: 2.25rem 2rem;
+  color: #0f172a;
+}
+[data-theme="dark"] .auth-page .login-card {
+  background: #1e293b; border-color: #334155; color: #f1f5f9;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+}
+.auth-page .login-card[hidden] { display: none !important; }
+
+.auth-page .login-logo { text-align: center; margin-bottom: 1.75rem; }
+.auth-page .brand-logo-sm {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: #0f172a; color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; margin-bottom: 1.15rem;
+}
+[data-theme="dark"] .auth-page .brand-logo-sm { background: #3b82f6; }
+.auth-page .login-logo h2 {
+  font-size: 1.75rem; font-weight: 700; margin: 0 0 0.4rem;
+  letter-spacing: -0.03em; color: inherit;
+}
+.auth-page .login-logo p {
+  color: #64748b; font-size: 0.9rem; line-height: 1.45;
+}
+[data-theme="dark"] .auth-page .login-logo p { color: #94a3b8; }
+
+/* Form fields — FIXED icon overlap */
+.auth-page .auth-field { margin-bottom: 1.1rem; }
+.auth-page .auth-label {
+  display: block; font-size: 0.875rem; font-weight: 600;
+  color: #475569; margin-bottom: 0.45rem;
+}
+[data-theme="dark"] .auth-page .auth-label { color: #94a3b8; }
+
+.auth-page .input-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+.auth-page .input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  pointer-events: none;
+  z-index: 1;
+}
+.auth-page .auth-input {
+  display: block;
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 48px; /* left clears 16+20+12 icon zone */
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+.auth-page .auth-input.has-toggle {
+  padding-right: 52px; /* room for eye button */
+}
+.auth-page .auth-input::placeholder { color: #94a3b8; }
+.auth-page .auth-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+[data-theme="dark"] .auth-page .auth-input {
+  background: #0f172a; border-color: #334155; color: #f1f5f9;
+}
+[data-theme="dark"] .auth-page .auth-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+.auth-page .password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: none; border: none;
+  color: #94a3b8; cursor: pointer;
+  border-radius: 8px;
+  z-index: 2;
+}
+.auth-page .password-toggle:hover {
+  color: #0f172a; background: #f1f5f9;
+}
+[data-theme="dark"] .auth-page .password-toggle:hover {
+  color: #f1f5f9; background: #334155;
+}
+.auth-page .password-toggle:focus-visible {
+  outline: 2px solid #2563eb; outline-offset: 1px;
+}
+
+.auth-page .auth-error {
+  display: block; min-height: 1.1em;
+  font-size: 0.78rem; color: #dc2626; margin-top: 0.3rem;
+}
+
+.auth-page .login-error {
+  background: #fee2e2; color: #991b1b; padding: 0.6rem 0.85rem;
+  border-radius: 10px; font-size: 0.85rem; margin-bottom: 0.85rem;
+}
+[data-theme="dark"] .auth-page .login-error {
+  background: #7f1d1d; color: #fca5a5;
+}
+
+.auth-page .login-options {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.25rem; font-size: 0.875rem;
+}
+.auth-page .remember-me {
+  display: flex; align-items: center; gap: 0.45rem;
+  color: #64748b; cursor: pointer; user-select: none;
+}
+.auth-page .link-btn {
+  background: none; border: none; color: #2563eb;
+  font-size: 0.875rem; font-weight: 600; cursor: pointer; padding: 0;
+}
+.auth-page .link-btn:hover { text-decoration: underline; }
+.auth-page .link-btn:focus-visible {
+  outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 2px;
+}
+
+.auth-page .login-btn {
+  width: 100%; justify-content: center;
+  height: 52px; padding: 0 1rem; font-size: 0.95rem;
+  border-radius: 12px; font-weight: 600;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.auth-page .login-btn:hover { transform: translateY(-1px); }
+
+.auth-page .login-switch {
+  text-align: center; margin-top: 1.25rem;
+  font-size: 0.875rem; color: #64748b;
+}
+
+.auth-page .demo-box {
+  margin-top: 1.25rem; padding: 0.7rem 0.9rem;
+  background: #f8fafc; border: 1px dashed #e2e8f0;
+  border-radius: 10px; text-align: center;
+}
+[data-theme="dark"] .auth-page .demo-box {
+  background: #0f172a; border-color: #334155;
+}
+.auth-page .demo-label {
+  display: block; font-size: 0.7rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: #94a3b8; margin-bottom: 0.2rem;
+}
+.auth-page .demo-creds {
+  font-size: 0.8rem; color: #64748b; font-family: ui-monospace, monospace;
+}
+.auth-page .cred-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; padding: 0.45rem 0;
+  font-size: 0.9rem; color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+}
+.auth-page .cred-row:last-of-type { border-bottom: none; }
+.auth-page .cred-row strong {
+  font-family: ui-monospace, monospace; color: #0f172a; font-size: 0.9rem;
+}
+[data-theme="dark"] .auth-page .cred-row { color: #94a3b8; border-color: #334155; }
+[data-theme="dark"] .auth-page .cred-row strong { color: #f1f5f9; }
+.auth-page .cred-note {
+  margin-top: 0.75rem; font-size: 0.75rem; color: #64748b; line-height: 1.4;
+}
+
+/* Password strength */
+.auth-page .pwd-strength {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-top: 0.45rem;
+}
+.auth-page .pwd-bar {
+  flex: 1; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden;
+}
+[data-theme="dark"] .auth-page .pwd-bar { background: #334155; }
+.auth-page .pwd-bar span {
+  display: block; height: 100%; width: 0; border-radius: 2px;
+  transition: width 0.2s ease, background 0.2s ease;
+}
+.auth-page .pwd-label { font-size: 0.75rem; font-weight: 600; color: #64748b; min-width: 52px; }
+
+.logout-btn { margin-top: 0.4rem; }
+.logout-btn:hover { color: #fca5a5 !important; }
+
+/* User menu (header — not auth-scoped) */
+.user-menu-wrap { position: relative; }
+.user-menu-btn {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 999px; padding: 0.25rem 0.65rem 0.25rem 0.3rem;
+  cursor: pointer; color: var(--text-primary); font-size: 0.85rem;
+}
+.user-menu-btn:hover { border-color: var(--primary); }
+.user-menu-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+}
+.user-name { font-weight: 600; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-menu-btn .fa-chevron-down { font-size: 0.65rem; color: var(--text-secondary); }
+.user-menu {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+  min-width: 180px; z-index: 200; overflow: hidden;
+}
+.user-menu[hidden] { display: none !important; }
+.user-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 0.65rem 0.9rem; background: none; border: none;
+  color: var(--text-primary); font-size: 0.85rem; cursor: pointer; text-align: left;
+}
+.user-menu button:hover { background: var(--background); }
+
+@media (max-width: 900px) {
+  .auth-page .login-shell { grid-template-columns: 1fr; }
+  .auth-page .login-brand { display: none; }
+  .auth-page .login-panel { padding: 1.5rem 1rem; }
+}
+@media (max-width: 480px) {
+  .user-name { display: none; }
+  .auth-page .login-card {
+    padding: 1.5rem 1.25rem; max-width: 100%;
+    box-shadow: 0 8px 24px rgba(15,23,42,0.06);
+  }
+  .auth-page .login-logo h2 { font-size: 1.4rem; }
+  .auth-page .auth-input { height: 50px; }
+  .auth-page .login-btn { height: 50px; }
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 1000;
+  transition: transform 0.25s ease;
+}
+.sidebar-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 1.15rem 1.25rem;
+  font-size: 1.05rem; font-weight: 700; color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-header i { color: var(--primary); font-size: 1.15rem; }
+.sidebar-close {
+  display: none; background: none; border: none; color: #fff;
+  font-size: 1.1rem; cursor: pointer; margin-left: auto;
+}
+.sidebar-nav { flex: 1; padding: 0.75rem 0.65rem; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 0.6rem 0.85rem; margin-bottom: 2px;
+  color: var(--sidebar-text); text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem; font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-item i { width: 20px; text-align: center; font-size: 0.95rem; flex-shrink: 0; }
+.nav-item:hover { background: var(--sidebar-hover); color: #e2e8f0; }
+.nav-item.active {
+  background: var(--sidebar-active); color: #fff;
+  font-weight: 600;
+}
+.nav-badge {
+  margin-left: auto;
+  background: rgba(255,255,255,0.12);
+  color: #e2e8f0;
+  font-size: 0.7rem; font-weight: 700;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.nav-badge.badge-warn { background: #f59e0b; color: #fff; }
+.nav-badge.badge-danger { background: #ef4444; color: #fff; }
+.nav-badge[data-count="0"] { opacity: 0.5; }
+
+.sidebar-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.theme-toggle {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.04); border: none;
+  color: var(--sidebar-text); padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm); cursor: pointer; width: 100%;
+  font-size: 0.85rem; transition: background 0.15s;
+}
+.theme-toggle:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+/* ===== Main ===== */
+.main-content {
+  flex: 1; margin-left: var(--sidebar-w);
+  padding: 0 1.5rem 2rem; min-width: 0;
+}
+.top-nav {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.9rem 0; position: sticky; top: 0;
+  background: var(--background); z-index: 100;
+}
+.hamburger {
+  display: none; background: none; border: none;
+  font-size: 1.2rem; color: var(--text-primary); cursor: pointer;
+  padding: 0.35rem;
+}
+.page-title { font-size: 1.35rem; font-weight: 700; flex: 1; letter-spacing: -0.02em; }
+.top-nav-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 999px; padding: 0.4rem 0.9rem;
+}
+.search-box input {
+  border: none; background: transparent; outline: none;
+  color: var(--text-primary); width: 200px; font-size: 0.85rem;
+}
+.search-box i { color: var(--text-secondary); font-size: 0.85rem; }
+
+.date-badge {
+  font-size: 0.8rem; color: var(--text-secondary);
+  background: var(--card-bg); border: 1px solid var(--border);
+  padding: 0.35rem 0.75rem; border-radius: 999px; white-space: nowrap;
+}
+
+.icon-btn {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-secondary);
+  cursor: pointer; position: relative; transition: all 0.15s;
+  font-size: 0.95rem;
+}
+.icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+.icon-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.badge-count {
+  position: absolute; top: -5px; right: -5px;
+  background: var(--danger); color: #fff;
+  font-size: 0.65rem; font-weight: 700;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.badge-count[data-count="0"] { display: none; }
+
+/* Notifications panel */
+.notif-wrap { position: relative; }
+.notif-panel {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 340px; max-width: calc(100vw - 2rem);
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-md);
+  z-index: 200; overflow: hidden;
+}
+.notif-panel[hidden] { display: none !important; }
+.notif-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--border);
+}
+.notif-panel-header h3 { font-size: 0.95rem; margin: 0; }
+.notif-panel-body { max-height: 360px; overflow-y: auto; }
+.notif-item {
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.15s;
+}
+.notif-item:hover { background: var(--background); }
+.notif-item.unread { background: rgba(59,130,246,0.06); }
+.notif-item .ni-title { font-weight: 600; font-size: 0.85rem; }
+.notif-item .ni-meta { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
+.notif-empty { padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem; }
+
+/* Export dropdown */
+.export-wrap { position: relative; }
+.export-menu {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-md);
+  min-width: 160px; z-index: 200; overflow: hidden;
+}
+.export-menu[hidden] { display: none !important; }
+.export-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 0.6rem 0.9rem; background: none; border: none;
+  color: var(--text-primary); font-size: 0.85rem; cursor: pointer; text-align: left;
+}
+.export-menu button:hover { background: var(--background); }
+
+/* Pages */
+.page { display: none; animation: fadeIn 0.2s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* Cards */
+.card {
+  background: var(--card-bg); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 1.15rem;
+  margin-bottom: 1.15rem; border: 1px solid var(--border);
+}
+.card h3 {
+  font-size: 0.95rem; font-weight: 600; margin-bottom: 0.85rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-header-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.85rem;
+}
+.card-header-row h3 { margin-bottom: 0; }
+
+/* KPI cards — match screenshot layout */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 1rem 1.1rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  min-height: 100px;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.kpi-card .kpi-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.kpi-icon-box {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+}
+.kpi-card .kpi-label {
+  font-size: 0.8rem; color: var(--text-secondary); font-weight: 500;
+}
+.kpi-card .kpi-value {
+  font-size: 1.65rem; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em; color: var(--text-primary);
+}
+.kpi-icon-box.blue { background: #dbeafe; color: #2563eb; }
+.kpi-icon-box.purple { background: #ede9fe; color: #7c3aed; }
+.kpi-icon-box.cyan { background: #cffafe; color: #0891b2; }
+.kpi-icon-box.orange { background: #ffedd5; color: #ea580c; }
+.kpi-icon-box.green { background: #d1fae5; color: #059669; }
+.kpi-icon-box.red { background: #fee2e2; color: #dc2626; }
+.kpi-icon-box.yellow { background: #fef3c7; color: #d97706; }
+.kpi-icon-box.indigo { background: #e0e7ff; color: #4f46e5; }
+
+[data-theme="dark"] .kpi-icon-box.blue { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .kpi-icon-box.purple { background: #2e1065; color: #c4b5fd; }
+[data-theme="dark"] .kpi-icon-box.cyan { background: #164e63; color: #67e8f9; }
+[data-theme="dark"] .kpi-icon-box.orange { background: #7c2d12; color: #fdba74; }
+[data-theme="dark"] .kpi-icon-box.green { background: #064e3b; color: #6ee7b7; }
+[data-theme="dark"] .kpi-icon-box.red { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .kpi-icon-box.yellow { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .kpi-icon-box.indigo { background: #312e81; color: #a5b4fc; }
+
+/* Charts */
+.charts-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 1.15rem; margin-bottom: 1.15rem;
+}
+.chart-card .chart-wrap { position: relative; height: 250px; }
+.dashboard-bottom, .dashboard-events {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.15rem; margin-bottom: 1.15rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-block; padding: 0.2rem 0.55rem;
+  border-radius: 999px; font-size: 0.72rem; font-weight: 600; white-space: nowrap;
+}
+.badge-applied, .badge-wishlist { background: #dbeafe; color: #1e40af; }
+.badge-screening, .badge-hr-screening, .badge-submitted { background: #ede9fe; color: #5b21b6; }
+.badge-interviewing, .badge-shortlisted { background: #cffafe; color: #0e7490; }
+.badge-interview, .badge-technical, .badge-1st, .badge-2nd, .badge-managerial, .badge-hr-round, .badge-final { background: #ffedd5; color: #c2410c; }
+.badge-offer { background: #d1fae5; color: #065f46; }
+.badge-accepted { background: #a7f3d0; color: #064e3b; }
+.badge-rejected { background: #fee2e2; color: #991b1b; }
+.badge-withdrawn { background: #e5e7eb; color: #374151; }
+.badge-on-hold { background: #fef3c7; color: #92400e; }
+.badge-completed { background: #e0e7ff; color: #3730a3; }
+
+[data-theme="dark"] .badge-applied,
+[data-theme="dark"] .badge-wishlist { background: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .badge-screening,
+[data-theme="dark"] .badge-hr-screening,
+[data-theme="dark"] .badge-submitted { background: #2e1065; color: #c4b5fd; }
+[data-theme="dark"] .badge-interviewing,
+[data-theme="dark"] .badge-shortlisted { background: #164e63; color: #67e8f9; }
+[data-theme="dark"] .badge-interview,
+[data-theme="dark"] .badge-technical,
+[data-theme="dark"] .badge-1st,
+[data-theme="dark"] .badge-2nd,
+[data-theme="dark"] .badge-managerial,
+[data-theme="dark"] .badge-hr-round,
+[data-theme="dark"] .badge-final { background: #7c2d12; color: #fdba74; }
+[data-theme="dark"] .badge-offer { background: #064e3b; color: #6ee7b7; }
+[data-theme="dark"] .badge-accepted { background: #065f46; color: #a7f3d0; }
+[data-theme="dark"] .badge-rejected { background: #7f1d1d; color: #fca5a5; }
+[data-theme="dark"] .badge-withdrawn { background: #374151; color: #d1d5db; }
+[data-theme="dark"] .badge-on-hold { background: #78350f; color: #fcd34d; }
+[data-theme="dark"] .badge-completed { background: #312e81; color: #a5b4fc; }
+
+/* Tables */
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th {
+  text-align: left; padding: 0.7rem 0.55rem;
+  border-bottom: 2px solid var(--border);
+  color: var(--text-secondary); font-weight: 600;
+  white-space: nowrap; position: sticky; top: 0; background: var(--card-bg);
+}
+.data-table td {
+  padding: 0.65rem 0.55rem; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.data-table tbody tr:hover { background: var(--background); }
+.actions-cell { display: flex; gap: 5px; white-space: nowrap; }
+.btn-icon {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-secondary); transition: all 0.15s; font-size: 0.8rem;
+}
+.btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-icon.danger:hover { background: var(--danger); border-color: var(--danger); }
+
+/* Filters */
+.filters-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 1rem; align-items: center;
+}
+.filters-bar select, .filters-bar input[type="date"] {
+  padding: 0.4rem 0.65rem; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--card-bg);
+  color: var(--text-primary); font-size: 0.8rem;
+}
+
+/* Forms */
+.form-card { max-width: 1100px; }
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1rem;
+}
+.form-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.form-group { display: flex; flex-direction: column; gap: 0.25rem; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label {
+  font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+}
+.form-group .req { color: var(--danger); }
+.form-group input, .form-group select, .form-group textarea {
+  padding: 0.55rem 0.7rem; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--card-bg);
+  color: var(--text-primary); font-size: 0.875rem; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+.form-group input.error, .form-group select.error { border-color: var(--danger); }
+.error-msg { font-size: 0.72rem; color: var(--danger); min-height: 1em; }
+.form-actions { display: flex; gap: 0.65rem; margin-top: 1.25rem; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0.5rem 1rem; border-radius: var(--radius-sm);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;
+  transition: all 0.15s;
+}
+.btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-outline {
+  background: transparent; border: 1px solid var(--border); color: var(--text-primary);
+}
+.btn-outline:hover { background: var(--background); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+.btn-sm { padding: 0.3rem 0.65rem; font-size: 0.78rem; }
+.btn-success { background: var(--success); color: #fff; }
+
+/* Kanban */
+.kanban-board {
+  display: flex; gap: 0.85rem; overflow-x: auto;
+  padding-bottom: 1rem; min-height: 400px;
+}
+.kanban-col {
+  min-width: 220px; max-width: 260px;
+  background: var(--background); border-radius: var(--radius);
+  padding: 0.7rem; flex-shrink: 0; border: 1px solid var(--border);
+}
+.kanban-col-header {
+  font-weight: 700; font-size: 0.8rem; margin-bottom: 0.65rem;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.kanban-count {
+  background: var(--card-bg); padding: 0.1rem 0.45rem;
+  border-radius: 999px; font-size: 0.7rem; border: 1px solid var(--border);
+}
+.kanban-card {
+  background: var(--card-bg); border-radius: var(--radius-sm);
+  padding: 0.7rem; margin-bottom: 0.5rem;
+  box-shadow: var(--shadow); cursor: grab;
+  border-left: 3px solid var(--primary); transition: box-shadow 0.15s;
+}
+.kanban-card:hover { box-shadow: var(--shadow-md); }
+.kanban-card .kc-company { font-weight: 600; font-size: 0.85rem; }
+.kanban-card .kc-title { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
+.kanban-card .kc-loc { font-size: 0.72rem; color: var(--text-secondary); margin-top: 3px; }
+.kanban-card.dragging { opacity: 0.5; }
+
+/* Follow-ups */
+.followup-item {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 0.7rem 0; border-bottom: 1px solid var(--border);
+}
+.followup-item:last-child { border-bottom: none; }
+.followup-item .fi-info { flex: 1; min-width: 0; }
+.followup-item .fi-company { font-weight: 600; font-size: 0.875rem; }
+.followup-item .fi-meta { font-size: 0.78rem; color: var(--text-secondary); }
+.event-item {
+  padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+}
+.event-item:last-child { border-bottom: none; }
+.event-item .ei-company { font-weight: 600; }
+.event-item .ei-meta { color: var(--text-secondary); font-size: 0.78rem; }
+
+.insight-item {
+  padding: 0.65rem 0.8rem; background: var(--background);
+  border-radius: var(--radius-sm); margin-bottom: 0.5rem;
+  font-size: 0.85rem; border-left: 3px solid var(--warning);
+}
+.insight-item i { margin-right: 6px; color: var(--warning); }
+
+.settings-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-bottom: 0.85rem; }
+.file-btn { cursor: pointer; }
+.hint { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Modal */
+.modal {
+  display: none; position: fixed; inset: 0;
+  background: rgba(15,23,42,0.45); z-index: 2000;
+  align-items: center; justify-content: center; padding: 1rem;
+}
+.modal.show { display: flex; }
+.modal-content {
+  background: var(--card-bg); border-radius: var(--radius);
+  width: 100%; max-width: 540px; max-height: 90vh;
+  overflow-y: auto; box-shadow: var(--shadow-md);
+}
+.modal-sm { max-width: 380px; }
+.modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.9rem 1.15rem; border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { margin: 0; font-size: 1.05rem; }
+.modal-close {
+  background: none; border: none; font-size: 1.4rem;
+  cursor: pointer; color: var(--text-secondary); line-height: 1;
+}
+.modal-body { padding: 1.15rem; }
+.modal-footer {
+  display: flex; gap: 0.65rem; justify-content: flex-end;
+  padding: 0.9rem 1.15rem; border-top: 1px solid var(--border);
+}
+.detail-row {
+  display: flex; padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border); font-size: 0.875rem;
+}
+.detail-row .dl { width: 130px; color: var(--text-secondary); flex-shrink: 0; }
+.detail-row .dv { flex: 1; word-break: break-word; }
+
+/* Toast */
+.toast-container {
+  position: fixed; bottom: 1.25rem; right: 1.25rem;
+  z-index: 3000; display: flex; flex-direction: column; gap: 0.45rem;
+}
+.toast {
+  background: var(--card-bg); color: var(--text-primary);
+  padding: 0.7rem 1.1rem; border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md); border-left: 4px solid var(--primary);
+  animation: slideIn 0.25s ease; font-size: 0.875rem;
+}
+.toast.success { border-color: var(--success); }
+.toast.error { border-color: var(--danger); }
+@keyframes slideIn { from { transform: translateX(80%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-success { color: var(--success); }
+.empty-state { text-align: center; padding: 1.75rem; color: var(--text-secondary); font-size: 0.875rem; }
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .form-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1024px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .dashboard-bottom, .dashboard-events { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-close { display: block; }
+  .main-content { margin-left: 0; padding: 0 1rem 1.5rem; }
+  .hamburger { display: block; }
+  .search-box input { width: 120px; }
+  .form-grid, .form-grid-4 { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .date-badge { display: none; }
+  .page-title { font-size: 1.15rem; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .filters-bar { flex-direction: column; align-items: stretch; }
+  .top-nav-right { gap: 0.4rem; }
+  .search-box input { width: 90px; }
+  .export-wrap .btn span, .export-wrap .fa-caret-down { display: none; }
+}
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="login-overlay auth-page" id="loginOverlay">
+    <div class="login-shell">
+      <aside class="login-brand">
+        <div class="login-brand-inner">
+          <div class="brand-logo-lg"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+          <h1>JobTracker Pro</h1>
+          <p class="brand-tagline">Your job search, organized.</p>
+          <p class="brand-desc">Track applications, interviews, follow-ups and offers in one place.</p>
+          <ul class="brand-features">
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Application Tracking</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Interview Management</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Follow-up Reminders</li>
+            <li><i class="fas fa-check-circle" aria-hidden="true"></i> Career Analytics</li>
+          </ul>
+          <p class="brand-note">Works offline · Data stays in your browser</p>
+        </div>
+      </aside>
+      <div class="login-panel">
+        <div class="login-card" id="signInView">
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+            <h2>Welcome back</h2>
+            <p>Sign in to continue managing your job applications</p>
+          </div>
+          <form id="loginForm" class="auth-form" autocomplete="on" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="loginUsername">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                <input class="auth-input" type="text" id="loginUsername" placeholder="Enter username" autocomplete="username">
+              </div>
+              <span class="auth-error" id="loginUserErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="loginPassword">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+                <button type="button" class="password-toggle" id="togglePassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="loginPassErr"></span>
+            </div>
+            <div class="login-error" id="loginError" hidden></div>
+            <div class="login-options">
+              <label class="remember-me"><input type="checkbox" id="rememberMe"> Remember me</label>
+              <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
+            </div>
+            <button type="submit" class="btn btn-primary login-btn" id="loginSubmitBtn"><i class="fas fa-arrow-right-to-bracket"></i> Sign In</button>
+          </form>
+          <p class="login-switch">Don't have an account? <button type="button" class="link-btn" id="showRegister">Create account</button></p>
+          <div class="demo-box">
+            <span class="demo-label">Demo account</span>
+            <span class="demo-creds">admin / admin123</span>
+          </div>
+        </div>
+        <div class="login-card" id="registerView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-user-plus" aria-hidden="true"></i></div>
+            <h2>Create your account</h2>
+            <p>Set up your private JobTracker workspace</p>
+          </div>
+          <form id="registerForm" class="auth-form" autocomplete="on" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="regName">Full Name</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+                <input class="auth-input" type="text" id="regName" placeholder="Enter your full name" autocomplete="name">
+              </div>
+              <span class="auth-error" id="regNameErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regUsername">Username</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-at"></i></span>
+                <input class="auth-input" type="text" id="regUsername" placeholder="Choose a username" autocomplete="username">
+              </div>
+              <span class="auth-error" id="regUserErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regEmail">Email</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                <input class="auth-input" type="email" id="regEmail" placeholder="Enter your email" autocomplete="email">
+              </div>
+              <span class="auth-error" id="regEmailErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regPassword">Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="regPassword" placeholder="Create a password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleRegPassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="pwd-strength" id="pwdStrength" hidden>
+                <div class="pwd-bar"><span id="pwdBarFill"></span></div>
+                <span class="pwd-label" id="pwdLabel">Weak</span>
+              </div>
+              <span class="auth-error" id="regPassErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="regConfirm">Confirm Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="regConfirm" placeholder="Confirm your password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleRegConfirm" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="regConfirmErr"></span>
+            </div>
+            <div class="login-error" id="registerError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn"><i class="fas fa-user-plus"></i> Create Account</button>
+          </form>
+          <p class="login-switch">Already have an account? <button type="button" class="link-btn" id="showSignIn">Sign in</button></p>
+        </div>
+
+        <div class="login-card" id="forgotView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-lock" aria-hidden="true"></i></div>
+            <h2>Forgot password</h2>
+            <p>Enter the email associated with your JobTracker Pro account. We will send your login details.</p>
+          </div>
+          <form id="forgotForm" class="auth-form" novalidate>
+            <div class="auth-field">
+              <label class="auth-label" for="forgotEmail">Email address</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                <input class="auth-input" type="email" id="forgotEmail" placeholder="Enter your registered email" autocomplete="email">
+              </div>
+              <span class="auth-error" id="forgotEmailErr"></span>
+            </div>
+            <div class="login-error" id="forgotError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn" id="forgotSubmitBtn"><i class="fas fa-paper-plane"></i> Send Login Details</button>
+          </form>
+          <p class="login-switch"><button type="button" class="link-btn" id="forgotBackSignIn">Back to Sign In</button></p>
+        </div>
+
+        <div class="login-card" id="forgotSentView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-envelope-open-text" aria-hidden="true"></i></div>
+            <h2 id="forgotSentTitle">Login details</h2>
+            <p id="forgotSentMsg">Your login credentials are shown below.</p>
+          </div>
+          <div class="demo-box" id="credsRecoveryBox" hidden>
+            <span class="demo-label">Your account credentials</span>
+            <div class="cred-row"><span>Username</span><strong id="recoveredUsername">—</strong></div>
+            <div class="cred-row"><span>Password</span><strong id="recoveredPassword">—</strong></div>
+            <p class="cred-note" id="emailSendNote"></p>
+          </div>
+          <div class="login-error" id="forgotNotFoundBox" hidden>No account was found for that email address.</div>
+          <button type="button" class="btn btn-primary login-btn" id="forgotSentBack"><i class="fas fa-arrow-right-to-bracket"></i> Back to Sign In</button>
+        </div>
+
+        <div class="login-card" id="resetView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-shield-halved" aria-hidden="true"></i></div>
+            <h2>Reset password</h2>
+            <p>Create a new password for your account</p>
+          </div>
+          <form id="resetForm" class="auth-form" novalidate>
+            <input type="hidden" id="resetToken">
+            <div class="auth-field">
+              <label class="auth-label" for="resetPassword">New Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="resetPassword" placeholder="Create a new password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleResetPassword" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <div class="pwd-strength" id="resetPwdStrength" hidden>
+                <div class="pwd-bar"><span id="resetPwdBarFill"></span></div>
+                <span class="pwd-label" id="resetPwdLabel">Weak</span>
+              </div>
+              <span class="auth-error" id="resetPassErr"></span>
+            </div>
+            <div class="auth-field">
+              <label class="auth-label" for="resetConfirm">Confirm Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+                <input class="auth-input has-toggle" type="password" id="resetConfirm" placeholder="Confirm new password" autocomplete="new-password">
+                <button type="button" class="password-toggle" id="toggleResetConfirm" aria-label="Show password"><i class="fas fa-eye"></i></button>
+              </div>
+              <span class="auth-error" id="resetConfirmErr"></span>
+            </div>
+            <div class="login-error" id="resetError" hidden></div>
+            <button type="submit" class="btn btn-primary login-btn"><i class="fas fa-check"></i> Reset Password</button>
+          </form>
+          <p class="login-switch"><button type="button" class="link-btn" id="resetBackSignIn">Back to Sign In</button></p>
+        </div>
+
+        <div class="login-card" id="resetSuccessView" hidden>
+          <div class="login-logo">
+            <div class="brand-logo-sm"><i class="fas fa-circle-check" aria-hidden="true"></i></div>
+            <h2>Password reset successfully</h2>
+            <p>Your password has been changed. Please sign in with your new password.</p>
+          </div>
+          <button type="button" class="btn btn-primary login-btn" id="resetSuccessSignIn"><i class="fas fa-arrow-right-to-bracket"></i> Back to Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer" hidden>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-briefcase"></i>
+        <span class="logo-text">JobTracker Pro</span>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close menu"><i class="fas fa-times"></i></button>
+      </div>
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a href="#" class="nav-item active" data-page="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+        <a href="#" class="nav-item" data-page="applications"><i class="fas fa-table"></i><span>All Applications</span><span class="nav-badge" id="badgeApps">0</span></a>
+        <a href="#" class="nav-item" data-page="add"><i class="fas fa-plus-circle"></i><span>Add Application</span></a>
+        <a href="#" class="nav-item" data-page="pipeline"><i class="fas fa-columns"></i><span>Pipeline</span></a>
+        <a href="#" class="nav-item" data-page="interviews"><i class="fas fa-calendar-check"></i><span>Interviews</span><span class="nav-badge badge-warn" id="badgeInterviews">0</span></a>
+        <a href="#" class="nav-item" data-page="followups"><i class="fas fa-bell"></i><span>Follow-ups</span><span class="nav-badge badge-danger" id="badgeFollowups">0</span></a>
+        <a href="#" class="nav-item" data-page="analytics"><i class="fas fa-chart-line"></i><span>Analytics</span></a>
+        <a href="#" class="nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></a>
+      </nav>
+      <div class="sidebar-footer">
+        <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme"><i class="fas fa-moon"></i><span>Dark Mode</span></button>
+        <button type="button" class="theme-toggle logout-btn" id="logoutBtn" title="Logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-nav">
+        <button type="button" class="hamburger" id="hamburger" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <div class="top-nav-right">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="search" id="globalSearch" placeholder="Search company, role, recruiter..." aria-label="Search applications">
+          </div>
+          <div class="date-badge" id="currentDate"></div>
+          <button type="button" class="icon-btn" id="themeToggleHeader" aria-label="Toggle dark mode" title="Theme"><i class="fas fa-moon"></i></button>
+          <div class="notif-wrap">
+            <button type="button" class="icon-btn" id="notifBell" aria-label="Notifications" title="Notifications">
+              <i class="fas fa-bell"></i>
+              <span class="badge-count" id="notifCount" data-count="0">0</span>
+            </button>
+            <div class="notif-panel" id="notifPanel" hidden role="dialog" aria-label="Notifications">
+              <div class="notif-panel-header">
+                <h3>Notifications</h3>
+                <button type="button" class="btn btn-sm btn-outline" id="markAllRead">Mark all read</button>
+              </div>
+              <div class="notif-panel-body" id="notifList"></div>
+            </div>
+          </div>
+          <div class="export-wrap">
+            <button type="button" class="btn btn-primary btn-sm" id="exportBtn" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-download"></i> Export <i class="fas fa-caret-down"></i>
+            </button>
+            <div class="export-menu" id="exportMenu" hidden>
+              <button type="button" onclick="exportJSON()"><i class="fas fa-file-code"></i> JSON Backup</button>
+              <button type="button" onclick="exportCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+              <button type="button" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+            </div>
+          </div>
+          <div class="user-menu-wrap">
+            <button type="button" class="user-menu-btn" id="userMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="User menu">
+              <span class="user-avatar" id="userAvatar">A</span>
+              <span class="user-name" id="userDisplayName">User</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-menu" id="userMenu" hidden>
+              <button type="button" onclick="navigateTo('settings'); closeUserMenu();"><i class="fas fa-user"></i> Profile &amp; Settings</button>
+              <button type="button" id="userMenuLogout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="page active" id="page-dashboard">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="card-header-row">
+              <h3>Applications by Status</h3>
+              <button type="button" class="btn btn-sm btn-outline" id="resetFilterBtn" style="display:none" onclick="resetDashboardFilter()">Reset</button>
+            </div>
+            <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Location</h3>
+            <div class="chart-wrap"><canvas id="locationChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Month</h3>
+            <div class="chart-wrap"><canvas id="monthChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Top Companies</h3>
+            <div class="chart-wrap"><canvas id="companyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="dashboard-bottom">
+          <div class="card">
+            <h3>Interview Pipeline</h3>
+            <div class="chart-wrap"><canvas id="pipelineChart"></canvas></div>
+          </div>
+          <div class="card insights-card">
+            <h3><i class="fas fa-lightbulb"></i> Job Search Insights</h3>
+            <div id="insightsList"></div>
+          </div>
+        </div>
+        <div class="dashboard-events">
+          <div class="card">
+            <h3><i class="fas fa-calendar-check"></i> Upcoming Interviews</h3>
+            <div id="upcomingInterviews"></div>
+          </div>
+          <div class="card">
+            <h3><i class="fas fa-clock"></i> Upcoming Follow-ups</h3>
+            <div id="upcomingFollowups"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Recent Applications</h3>
+            <button type="button" class="btn btn-sm btn-outline" onclick="navigateTo('applications')">View All</button>
+          </div>
+          <div class="table-responsive" id="recentAppsTable"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-applications">
+        <div class="filters-bar">
+          <select id="filterStatus" aria-label="Filter by status"><option value="">All Statuses</option></select>
+          <select id="filterLocation" aria-label="Filter by location"><option value="">All Locations</option></select>
+          <select id="filterWorkMode" aria-label="Filter by work mode"><option value="">All Work Modes</option></select>
+          <select id="filterSource" aria-label="Filter by source"><option value="">All Sources</option></select>
+          <select id="filterRound" aria-label="Filter by round"><option value="">All Rounds</option></select>
+          <input type="date" id="filterDateFrom" title="From date" aria-label="From date">
+          <input type="date" id="filterDateTo" title="To date" aria-label="To date">
+          <button type="button" class="btn btn-sm btn-outline" onclick="clearFilters()">Clear Filters</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="appsTable">
+            <thead>
+              <tr>
+                <th>ID</th><th>Date</th><th>Company</th><th>Job Title</th><th>Location</th>
+                <th>Mode</th><th>Status</th><th>Round</th><th>Interview</th><th>Follow-up</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="page" id="page-add">
+        <div class="card form-card">
+          <h3 id="formTitle">Add New Application</h3>
+          <form id="appForm" novalidate>
+            <input type="hidden" id="editId">
+            <div class="form-grid form-grid-4">
+              <div class="form-group">
+                <label for="fId">Application ID <span class="req">*</span></label>
+                <input type="text" id="fId" placeholder="e.g. SEP-005" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fAppDate">Application Date <span class="req">*</span></label>
+                <input type="date" id="fAppDate" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fCompany">Company Name <span class="req">*</span></label>
+                <input type="text" id="fCompany" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fTitle">Job Title / Position <span class="req">*</span></label>
+                <input type="text" id="fTitle" required>
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fLocation">Job Location</label>
+                <input type="text" id="fLocation" placeholder="Pune, IN">
+              </div>
+              <div class="form-group">
+                <label for="fWorkMode">Work Mode</label>
+                <select id="fWorkMode">
+                  <option value="">Select</option>
+                  <option>Remote</option><option>Hybrid</option><option>On-site</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fHrName">Recruiter / HR Name</label>
+                <input type="text" id="fHrName">
+              </div>
+              <div class="form-group">
+                <label for="fHrPhone">HR Contact</label>
+                <input type="tel" id="fHrPhone" placeholder="10 digits">
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fHrEmail">HR Email</label>
+                <input type="email" id="fHrEmail">
+                <span class="error-msg"></span>
+              </div>
+              <div class="form-group">
+                <label for="fSource">Application Source</label>
+                <select id="fSource">
+                  <option value="">Select</option>
+                  <option>LinkedIn</option><option>Naukri</option><option>Indeed</option>
+                  <option>Company Website</option><option>Referral</option><option>Consultancy</option><option>Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fStatus">Application Status</label>
+                <select id="fStatus">
+                  <option>Wishlist</option><option selected>Applied</option>
+                  <option>Submitted - Pending Response</option><option>HR Screening</option>
+                  <option>Interviewing</option><option>Technical Round</option>
+                  <option>Managerial Round</option><option>HR Round</option><option>Final Round</option>
+                  <option>Offer Received</option><option>Accepted</option>
+                  <option>On Hold</option><option>Rejected</option><option>Withdrawn</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fRound">Interview Round</label>
+                <select id="fRound">
+                  <option>Not Started</option><option>HR Screening</option><option>1st Round</option>
+                  <option>2nd Round</option><option>Technical Round</option><option>Managerial Round</option>
+                  <option>HR Round</option><option>Final Round</option><option>Completed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fIntDate">Interview Date</label>
+                <input type="date" id="fIntDate">
+              </div>
+              <div class="form-group">
+                <label for="fIntTime">Interview Time</label>
+                <input type="time" id="fIntTime">
+              </div>
+              <div class="form-group">
+                <label for="fSalary">Expected Salary</label>
+                <input type="text" id="fSalary" placeholder="7 LPA / 3500000">
+              </div>
+              <div class="form-group">
+                <label for="fFollowDate">Next Follow-up Date</label>
+                <input type="date" id="fFollowDate">
+              </div>
+              <div class="form-group">
+                <label for="fFollowStatus">Follow-up Status</label>
+                <select id="fFollowStatus">
+                  <option>Not Due</option><option>Due</option><option>Overdue</option>
+                  <option>Completed</option><option>No Response Needed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="fOfferStatus">Offer Status</label>
+                <select id="fOfferStatus">
+                  <option>Not Applicable</option><option>Pending</option><option>Received</option>
+                  <option>Accepted</option><option>Declined</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label for="fNotes">Notes / Remarks</label>
+                <textarea id="fNotes" rows="3"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="saveBtn"><i class="fas fa-check"></i> Save Application</button>
+              <button type="button" class="btn btn-outline" onclick="cancelForm()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="page" id="page-interviews">
+        <div class="card">
+          <h3>Interview Tracking</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr><th>Company</th><th>Job Title</th><th>Round</th><th>Date</th><th>Time</th><th>Status</th><th>Notes</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="interviewsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-followups">
+        <div class="followup-sections">
+          <div class="card">
+            <h3 class="text-danger"><i class="fas fa-exclamation-circle"></i> Overdue Follow-ups</h3>
+            <div id="overdueFollowups"></div>
+          </div>
+          <div class="card">
+            <h3 class="text-warning"><i class="fas fa-clock"></i> Due Today</h3>
+            <div id="todayFollowups"></div>
+          </div>
+          <div class="card">
+            <h3 class="text-success"><i class="fas fa-calendar"></i> Upcoming Follow-ups</h3>
+            <div id="futureFollowups"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-pipeline">
+        <div class="kanban-board" id="kanbanBoard"></div>
+      </section>
+
+      <section class="page" id="page-analytics">
+        <div class="kpi-grid" id="analyticsKpis"></div>
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <h3>Applications by Status</h3>
+            <div class="chart-wrap"><canvas id="analyticsStatusChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Location</h3>
+            <div class="chart-wrap"><canvas id="analyticsLocationChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Applications by Month</h3>
+            <div class="chart-wrap"><canvas id="analyticsMonthChart"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3>Top Companies</h3>
+            <div class="chart-wrap"><canvas id="analyticsCompanyChart"></canvas></div>
+          </div>
+        </div>
+        <div class="dashboard-bottom">
+          <div class="card">
+            <h3>Interview Pipeline</h3>
+            <div class="chart-wrap"><canvas id="analyticsPipelineChart"></canvas></div>
+          </div>
+          <div class="card insights-card">
+            <h3><i class="fas fa-lightbulb"></i> Job Search Insights</h3>
+            <div id="analyticsInsightsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="card">
+          <h3><i class="fas fa-user-shield"></i> Account &amp; Credentials</h3>
+          <p class="hint" style="margin-bottom:1rem">Change login username and password (stored in this browser only).</p>
+          <form id="credentialsForm" class="form-grid" style="max-width:520px">
+            <div class="form-group">
+              <label for="credUsername">Username</label>
+              <input type="text" id="credUsername" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="credCurrentPassword">Current Password</label>
+              <input type="password" id="credCurrentPassword" required autocomplete="current-password">
+            </div>
+            <div class="form-group">
+              <label for="credNewPassword">New Password</label>
+              <input type="password" id="credNewPassword" minlength="4" autocomplete="new-password" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group">
+              <label for="credConfirmPassword">Confirm New Password</label>
+              <input type="password" id="credConfirmPassword" minlength="4" autocomplete="new-password">
+            </div>
+            <div class="form-group full-width">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Credentials</button>
+            </div>
+          </form>
+        </div>
+        <div class="card">
+          <h3>Data Management</h3>
+          <div class="settings-actions">
+            <button type="button" class="btn btn-primary" onclick="exportJSON()"><i class="fas fa-download"></i> Backup (JSON)</button>
+            <button type="button" class="btn btn-primary" onclick="exportCSV()"><i class="fas fa-file-csv"></i> Export CSV</button>
+            <button type="button" class="btn btn-primary" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Export Excel</button>
+            <label class="btn btn-outline file-btn">
+              <i class="fas fa-upload"></i> Import / Restore
+              <input type="file" id="importFile" accept=".json,.csv,.xlsx,.xls" hidden>
+            </label>
+            <button type="button" class="btn btn-danger" onclick="clearAllData()"><i class="fas fa-trash"></i> Clear All Data</button>
+          </div>
+          <p class="hint">Import accepts JSON, CSV, or Excel. Data is merged by Application ID.</p>
+        </div>
+        <div class="card">
+          <h3>About</h3>
+          <p>JobTracker Pro — job application tracker. Data is stored locally in your browser.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="viewModal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Application Details</h3>
+        <button type="button" class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="viewModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="viewEditBtn">Edit</button>
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h3>Confirm</h3>
+        <button type="button" class="modal-close" onclick="closeConfirm()" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="confirmBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="confirmYes">Yes</button>
+        <button type="button" class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script>
+/* ============================================================
+   Job Application Tracker — script.js
+   Fully client-side, localStorage-backed
+   ============================================================ */
+
+const THEME_KEY = 'jobTrackerTheme';
+const FILTER_KEY = 'jobTrackerDashFilter';
+const USERS_KEY = 'jobTrackerUsers_v2';
+const DATA_PREFIX = 'jobTrackerData_v2_';
+const SESSION_KEY = 'jobTrackerSession_v2';
+const OLD_APPS_KEY = 'jobTrackerApps_v1';
+const OLD_CREDS_KEY = 'jobTrackerCreds_v1';
+const NOTIF_READ_PREFIX = 'jobTrackerNotifRead_';
+const RESET_TOKENS_KEY = 'jobTrackerResetTokens_v2';
+const RESET_RATE_KEY = 'jobTrackerResetRate_v2';
+const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const RESET_RATE_LIMIT = 3;
+const RESET_RATE_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+const DEMO_ADMIN = {
+  id: 'user_admin',
+  username: 'admin',
+  password: 'admin123',
+  fullName: 'Admin',
+  email: 'admin@local'
+};
+
+// ---------- Seed data from Excel (migrated to admin on first run) ----------
+const SEED_DATA = [
+  {
+    id: 'SEP-001',
+    applicationDate: '2025-09-04',
+    company: 'Wipro',
+    jobTitle: 'Control-M Support L3',
+    location: 'Pune, IN',
+    workMode: 'Hybrid',
+    hrName: 'Mandakini',
+    hrPhone: '9284945822',
+    hrEmail: 'manda.giri@wipro.com',
+    source: 'Company Website',
+    status: 'Technical Round',
+    interviewRound: 'Technical Round',
+    interviewDate: '2025-09-15',
+    interviewTime: '',
+    salary: '7to8 LPA',
+    followUpDate: '2025-09-17',
+    followUpStatus: 'Due',
+    offerStatus: 'Not Applicable',
+    notes: 'panel is not available for the past interview so need to check next availability date'
+  },
+  {
+    id: 'SEP-004',
+    applicationDate: '2025-09-08',
+    company: 'Cognizent',
+    jobTitle: 'Insurance- Back office',
+    location: 'Pune, IN',
+    workMode: 'On-site',
+    hrName: 'Hanifa',
+    hrPhone: '8096510060',
+    hrEmail: 'Hanifa.Hanifa@cognizant.com',
+    source: 'Referral',
+    status: 'Final Round',
+    interviewRound: 'Completed',
+    interviewDate: '2025-09-12',
+    interviewTime: '19:15',
+    salary: '6.5 LPA',
+    followUpDate: '2025-09-15',
+    followUpStatus: 'Due',
+    offerStatus: 'Not Applicable',
+    notes: 'waiting for interview feedback'
+  },
+  {
+    id: 'SAMPLE-001',
+    applicationDate: '2026-08-01',
+    company: 'Google',
+    jobTitle: 'Senior Product Manager',
+    location: 'Bengaluru, IN',
+    workMode: 'Hybrid',
+    hrName: 'Ananya Rao',
+    hrPhone: '9876500001',
+    hrEmail: 'ananya.rao@google-example.com',
+    source: 'LinkedIn',
+    status: 'Final Round',
+    interviewRound: 'Final Round',
+    interviewDate: '2026-09-18',
+    interviewTime: '15:00',
+    salary: '3500000',
+    followUpDate: '2026-09-20',
+    followUpStatus: 'Due',
+    offerStatus: 'Pending',
+    notes: 'Great culture fit; panel mentioned quick turnaround.'
+  },
+  {
+    id: 'SAMPLE-002',
+    applicationDate: '2026-08-03',
+    company: 'Microsoft',
+    jobTitle: 'Program Manager II',
+    location: 'Hyderabad, IN',
+    workMode: 'On-site',
+    hrName: 'Rohit Sharma',
+    hrPhone: '9876500002',
+    hrEmail: 'rohit.sharma@microsoft-example.com',
+    source: 'Naukri',
+    status: 'Technical Round',
+    interviewRound: 'Technical Round',
+    interviewDate: '2026-09-16',
+    interviewTime: '11:30',
+    salary: '3200000',
+    followUpDate: '2026-09-17',
+    followUpStatus: 'Due',
+    offerStatus: 'Pending',
+    notes: '2nd interviewer focused on system design.'
+  },
+  {
+    id: 'SAMPLE-003',
+    applicationDate: '2026-07-20',
+    company: 'Amazon',
+    jobTitle: 'Senior Product Manager - Tech',
+    location: 'Pune, IN',
+    workMode: 'Hybrid',
+    hrName: 'Kavya Menon',
+    hrPhone: '9876500003',
+    hrEmail: 'kavya.menon@amazon-example.com',
+    source: 'Company Website',
+    status: 'Interviewing',
+    interviewRound: 'Managerial Round',
+    interviewDate: '2026-09-22',
+    interviewTime: '10:00',
+    salary: '3300000',
+    followUpDate: '2026-09-19',
+    followUpStatus: 'Due',
+    offerStatus: 'Pending',
+    notes: 'Awaiting bar-raiser round scheduling.'
+  },
+  {
+    id: 'SAMPLE-004',
+    applicationDate: '2026-07-15',
+    company: 'TCS',
+    jobTitle: 'IT Project Manager',
+    location: 'Mumbai, IN',
+    workMode: 'On-site',
+    hrName: 'Suresh Iyer',
+    hrPhone: '9876500004',
+    hrEmail: 'suresh.iyer@tcs-example.com',
+    source: 'Referral',
+    status: 'Offer Received',
+    interviewRound: 'Completed',
+    interviewDate: '2026-08-25',
+    interviewTime: '09:00',
+    salary: '1800000',
+    followUpDate: '2026-09-15',
+    followUpStatus: 'Due',
+    offerStatus: 'Received',
+    notes: 'Offer letter received; awaiting final negotiation.'
+  },
+  {
+    id: 'SAMPLE-005',
+    applicationDate: '2026-07-05',
+    company: 'Infosys',
+    jobTitle: 'Delivery Manager',
+    location: 'Chennai, IN',
+    workMode: 'Hybrid',
+    hrName: 'Priya Nair',
+    hrPhone: '9876500005',
+    hrEmail: 'priya.nair@infosys-example.com',
+    source: 'Indeed',
+    status: 'Rejected',
+    interviewRound: 'Completed',
+    interviewDate: '2026-08-05',
+    interviewTime: '14:00',
+    salary: '1900000',
+    followUpDate: '',
+    followUpStatus: 'No Response Needed',
+    offerStatus: 'Not Applicable',
+    notes: 'Role went to an internal candidate.'
+  },
+  {
+    id: 'SAMPLE-006',
+    applicationDate: '2026-08-10',
+    company: 'Flipkart',
+    jobTitle: 'Category Manager',
+    location: 'Bengaluru, IN',
+    workMode: 'Remote',
+    hrName: 'Vikram Desai',
+    hrPhone: '9876500006',
+    hrEmail: 'vikram.desai@flipkart-example.com',
+    source: 'LinkedIn',
+    status: 'On Hold',
+    interviewRound: 'Completed',
+    interviewDate: '',
+    interviewTime: '',
+    salary: '2600000',
+    followUpDate: '2026-09-25',
+    followUpStatus: 'Not Due',
+    offerStatus: 'Not Applicable',
+    notes: 'Hiring paused for budget approval.'
+  },
+  {
+    id: 'SAMPLE-007',
+    applicationDate: '2026-08-18',
+    company: 'Accenture',
+    jobTitle: 'Associate Director - Strategy',
+    location: 'Gurugram, IN',
+    workMode: 'Hybrid',
+    hrName: 'Meera Pillai',
+    hrPhone: '9876500007',
+    hrEmail: 'meera.pillai@accenture-example.com',
+    source: 'Consultancy',
+    status: 'Interviewing',
+    interviewRound: 'Not Started',
+    interviewDate: '',
+    interviewTime: '',
+    salary: '3600000',
+    followUpDate: '2026-09-16',
+    followUpStatus: 'Due',
+    offerStatus: 'Not Applicable',
+    notes: 'Recruiter to confirm screening call.'
+  },
+  {
+    id: 'SAMPLE-008',
+    applicationDate: '2026-08-22',
+    company: 'Wipro',
+    jobTitle: 'Engagement Manager',
+    location: 'Pune, IN',
+    workMode: 'On-site',
+    hrName: 'Arjun Kapoor',
+    hrPhone: '9876500008',
+    hrEmail: 'arjun.kapoor@wipro-example.com',
+    source: 'Company Website',
+    status: 'Withdrawn',
+    interviewRound: '1st Round',
+    interviewDate: '',
+    interviewTime: '',
+    salary: '2100000',
+    followUpDate: '',
+    followUpStatus: 'No Response Needed',
+    offerStatus: 'Not Applicable',
+    notes: 'Withdrew -- accepted another offer.'
+  },
+  {
+    id: 'SAMPLE-009',
+    applicationDate: '2026-09-01',
+    company: 'Netflix',
+    jobTitle: 'Senior Manager, Content Ops',
+    location: 'Mumbai, IN',
+    workMode: 'Remote',
+    hrName: 'Diya Kulkarni',
+    hrPhone: '9876500009',
+    hrEmail: 'diya.kulkarni@netflix-example.com',
+    source: 'Referral',
+    status: 'Applied',
+    interviewRound: 'Not Started',
+    interviewDate: '',
+    interviewTime: '',
+    salary: '4000000',
+    followUpDate: '2026-09-14',
+    followUpStatus: 'Overdue',
+    offerStatus: 'Not Applicable',
+    notes: 'Follow up with referrer this week.'
+  },
+  {
+    id: 'SAMPLE-010',
+    applicationDate: '2026-06-10',
+    company: 'Deloitte',
+    jobTitle: 'Manager - Consulting',
+    location: 'Delhi, IN',
+    workMode: 'Hybrid',
+    hrName: 'Karan Malhotra',
+    hrPhone: '9876500010',
+    hrEmail: 'karan.malhotra@deloitte-example.com',
+    source: 'Naukri',
+    status: 'Accepted',
+    interviewRound: 'Completed',
+    interviewDate: '2026-07-01',
+    interviewTime: '10:00',
+    salary: '2000000',
+    followUpDate: '',
+    followUpStatus: 'Completed',
+    offerStatus: 'Not Applicable',
+    notes: 'Joined -- closed successfully.'
+  }
+];
+
+// ---------- State ----------
+let applications = [];
+let charts = {};
+let dashFilter = null;
+let confirmCallback = null;
+let currentUser = null; // { id, username, fullName, email }
+let _appInitialized = false;
+
+// ---------- Multi-user storage layer ----------
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function dataKey(userId) {
+  return DATA_PREFIX + userId;
+}
+
+function getUserData(userId) {
+  try {
+    const raw = localStorage.getItem(dataKey(userId));
+    if (!raw) return { applications: [] };
+    const parsed = JSON.parse(raw);
+    return { applications: Array.isArray(parsed.applications) ? parsed.applications : [] };
+  } catch {
+    return { applications: [] };
+  }
+}
+
+function saveUserData(userId, data) {
+  localStorage.setItem(dataKey(userId), JSON.stringify({
+    applications: data.applications || []
+  }));
+}
+
+function findUserByUsername(username) {
+  const u = (username || '').trim().toLowerCase();
+  return getUsers().find(x => x.username.toLowerCase() === u) || null;
+}
+
+function generateUserId() {
+  return 'user_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function migrateLegacyData() {
+  let users = getUsers();
+  if (!users.length) {
+    users = [{ ...DEMO_ADMIN }];
+    saveUsers(users);
+    // Prefer old single-user apps if present, else seed data
+    let apps = null;
+    const oldApps = localStorage.getItem(OLD_APPS_KEY);
+    if (oldApps) {
+      try { apps = JSON.parse(oldApps); } catch { apps = null; }
+    }
+    if (!Array.isArray(apps) || !apps.length) apps = [...SEED_DATA];
+    saveUserData(DEMO_ADMIN.id, { applications: apps });
+    // Clean old single-user keys after migration
+    localStorage.removeItem(OLD_APPS_KEY);
+    localStorage.removeItem(OLD_CREDS_KEY);
+  }
+}
+
+function getSession() {
+  try {
+    const s = sessionStorage.getItem(SESSION_KEY) || localStorage.getItem(SESSION_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setSession(user, remember) {
+  const payload = JSON.stringify({
+    id: user.id,
+    username: user.username,
+    fullName: user.fullName || user.username,
+    email: user.email || ''
+  });
+  sessionStorage.setItem(SESSION_KEY, payload);
+  if (remember) {
+    localStorage.setItem(SESSION_KEY, payload);
+  } else {
+    localStorage.removeItem(SESSION_KEY);
+  }
+}
+
+function clearSession() {
+  sessionStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(SESSION_KEY);
+  currentUser = null;
+}
+
+function isLoggedIn() {
+  const s = getSession();
+  if (!s || !s.id) return false;
+  const user = getUsers().find(u => u.id === s.id);
+  return !!user;
+}
+
+function restoreCurrentUser() {
+  const s = getSession();
+  if (!s) { currentUser = null; return false; }
+  const user = getUsers().find(u => u.id === s.id);
+  if (!user) { clearSession(); return false; }
+  currentUser = {
+    id: user.id,
+    username: user.username,
+    fullName: user.fullName || user.username,
+    email: user.email || ''
+  };
+  return true;
+}
+
+function loadApplications() {
+  if (!currentUser) { applications = []; return; }
+  const data = getUserData(currentUser.id);
+  applications = data.applications || [];
+}
+
+function saveApplications() {
+  if (!currentUser) return;
+  saveUserData(currentUser.id, { applications });
+}
+
+// ---------- Init ----------
+document.addEventListener('DOMContentLoaded', () => {
+  loadTheme();
+  migrateLegacyData();
+  setupAuthUI();
+  if (restoreCurrentUser()) {
+    showApp();
+  } else {
+    showLogin();
+  }
+});
+
+function initApp() {
+  loadApplications();
+  if (!_appInitialized) {
+    setupNav();
+    setupSearch();
+    setupForm();
+    setupImport();
+    setupCredentialsForm();
+    setupNotificationsUI();
+    setupExportMenu();
+    setupHeaderTheme();
+    setupUserMenu();
+    _appInitialized = true;
+  }
+  updateCurrentDate();
+  updateUserHeader();
+  renderAll();
+}
+
+function showAuthCard(id) {
+  ['signInView', 'registerView', 'forgotView', 'forgotSentView', 'resetView', 'resetSuccessView'].forEach(cid => {
+    const el = document.getElementById(cid);
+    if (el) el.hidden = (cid !== id);
+  });
+}
+
+function showLogin() {
+  const overlay = document.getElementById('loginOverlay');
+  const app = document.getElementById('appContainer');
+  if (overlay) overlay.hidden = false;
+  if (app) app.hidden = true;
+  showAuthCard('signInView');
+  const pw = document.getElementById('loginPassword');
+  if (pw) pw.value = '';
+  const err = document.getElementById('loginError');
+  if (err) { err.hidden = true; err.textContent = ''; }
+}
+
+function showApp() {
+  if (!restoreCurrentUser()) {
+    showLogin();
+    return;
+  }
+  const overlay = document.getElementById('loginOverlay');
+  const app = document.getElementById('appContainer');
+  if (overlay) overlay.hidden = true;
+  if (app) app.hidden = false;
+  initApp();
+}
+
+function updateUserHeader() {
+  if (!currentUser) return;
+  const name = currentUser.fullName || currentUser.username || 'User';
+  const initials = name.split(/\s+/).map(p => p[0]).join('').slice(0, 2).toUpperCase() || 'U';
+  const av = document.getElementById('userAvatar');
+  const dn = document.getElementById('userDisplayName');
+  if (av) av.textContent = initials;
+  if (dn) dn.textContent = name;
+}
+
+function setupUserMenu() {
+  const btn = document.getElementById('userMenuBtn');
+  const menu = document.getElementById('userMenu');
+  if (!btn || !menu) return;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    btn.setAttribute('aria-expanded', String(!menu.hidden));
+  });
+  document.addEventListener('click', (e) => {
+    if (!menu.hidden && !menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.hidden = true;
+    }
+  });
+  document.getElementById('userMenuLogout')?.addEventListener('click', () => doLogout());
+}
+
+function closeUserMenu() {
+  const menu = document.getElementById('userMenu');
+  if (menu) menu.hidden = true;
+}
+
+function doLogout() {
+  clearSession();
+  applications = [];
+  dashFilter = null;
+  Object.keys(charts).forEach(k => { try { charts[k]?.destroy(); } catch (_) {} charts[k] = null; });
+  closeUserMenu();
+  showLogin();
+  toast('Logged out');
+}
+
+function bindTogglePassword(btnId, inputId) {
+  document.getElementById(btnId)?.addEventListener('click', () => {
+    const input = document.getElementById(inputId);
+    const icon = document.querySelector('#' + btnId + ' i');
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (icon) icon.className = 'fas fa-eye-slash';
+      document.getElementById(btnId)?.setAttribute('aria-label', 'Hide password');
+    } else {
+      input.type = 'password';
+      if (icon) icon.className = 'fas fa-eye';
+      document.getElementById(btnId)?.setAttribute('aria-label', 'Show password');
+    }
+  });
+}
+
+function setupAuthUI() {
+  document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleLogin();
+  });
+  document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleRegister();
+  });
+  bindTogglePassword('togglePassword', 'loginPassword');
+  bindTogglePassword('toggleRegPassword', 'regPassword');
+  bindTogglePassword('toggleRegConfirm', 'regConfirm');
+  bindTogglePassword('toggleResetPassword', 'resetPassword');
+  bindTogglePassword('toggleResetConfirm', 'resetConfirm');
+
+  document.getElementById('showRegister')?.addEventListener('click', () => showAuthCard('registerView'));
+  document.getElementById('showSignIn')?.addEventListener('click', () => showAuthCard('signInView'));
+  document.getElementById('forgotBtn')?.addEventListener('click', () => {
+    showAuthCard('forgotView');
+    const fe = document.getElementById('forgotEmail');
+    if (fe) fe.value = '';
+    const err = document.getElementById('forgotEmailErr');
+    if (err) err.textContent = '';
+  });
+  document.getElementById('forgotBackSignIn')?.addEventListener('click', () => showAuthCard('signInView'));
+  document.getElementById('forgotSentBack')?.addEventListener('click', () => showAuthCard('signInView'));
+  document.getElementById('resetBackSignIn')?.addEventListener('click', () => showAuthCard('signInView'));
+  document.getElementById('resetSuccessSignIn')?.addEventListener('click', () => showAuthCard('signInView'));
+  document.getElementById('logoutBtn')?.addEventListener('click', () => doLogout());
+  document.getElementById('regPassword')?.addEventListener('input', updatePasswordStrength);
+  document.getElementById('resetPassword')?.addEventListener('input', () => updatePasswordStrengthField('resetPassword', 'resetPwdStrength', 'resetPwdBarFill', 'resetPwdLabel'));
+
+  document.getElementById('forgotForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleForgotPassword();
+  });
+  document.getElementById('resetForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    handleResetPassword();
+  });
+  // Support deep-link style reset via URL hash: #reset=TOKEN (legacy token flow)
+  const hash = (location.hash || '').replace(/^#/, '');
+  if (hash.startsWith('reset=')) {
+    const token = decodeURIComponent(hash.slice(6));
+    if (token) {
+      showLogin();
+      openResetWithToken(token);
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  }
+}
+
+function updatePasswordStrength() {
+  updatePasswordStrengthField('regPassword', 'pwdStrength', 'pwdBarFill', 'pwdLabel');
+}
+
+function updatePasswordStrengthField(inputId, wrapId, barId, labelId) {
+  const pwd = document.getElementById(inputId)?.value || '';
+  const wrap = document.getElementById(wrapId);
+  const bar = document.getElementById(barId);
+  const label = document.getElementById(labelId);
+  if (!wrap || !bar || !label) return;
+  if (!pwd) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (pwd.length >= 12) score++;
+  if (/\d/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  const levels = [
+    { w: '25%', c: '#ef4444', t: 'Weak' },
+    { w: '50%', c: '#f59e0b', t: 'Fair' },
+    { w: '75%', c: '#3b82f6', t: 'Good' },
+    { w: '100%', c: '#10b981', t: 'Strong' }
+  ];
+  const idx = Math.min(Math.max(score - 1, 0), 3);
+  const L = levels[idx];
+  bar.style.width = L.w;
+  bar.style.background = L.c;
+  label.textContent = L.t;
+  label.style.color = L.c;
+}
+
+/* ---------- Password reset service (local/offline + future backend-ready) ---------- */
+function getResetTokens() {
+  try { return JSON.parse(localStorage.getItem(RESET_TOKENS_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveResetTokens(list) {
+  localStorage.setItem(RESET_TOKENS_KEY, JSON.stringify(list));
+}
+
+function getResetRateMap() {
+  try { return JSON.parse(localStorage.getItem(RESET_RATE_KEY) || '{}'); }
+  catch { return {}; }
+}
+function saveResetRateMap(map) {
+  localStorage.setItem(RESET_RATE_KEY, JSON.stringify(map));
+}
+
+function generateSecureToken() {
+  const bytes = new Uint8Array(32);
+  if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+  else for (let i = 0; i < 32; i++) bytes[i] = Math.floor(Math.random() * 256);
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function hashToken(token) {
+  if (window.crypto && crypto.subtle) {
+    const data = new TextEncoder().encode(token);
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+  }
+  // Fallback (not cryptographic) for very old browsers
+  let h = 0;
+  for (let i = 0; i < token.length; i++) h = ((h << 5) - h) + token.charCodeAt(i) | 0;
+  return 'fb_' + Math.abs(h).toString(16) + '_' + token.length;
+}
+
+function findUserByEmail(email) {
+  const e = (email || '').trim().toLowerCase();
+  return getUsers().find(u => (u.email || '').toLowerCase() === e) || null;
+}
+
+function isRateLimited(email) {
+  const key = (email || '').trim().toLowerCase();
+  const map = getResetRateMap();
+  const now = Date.now();
+  const entries = (map[key] || []).filter(t => now - t < RESET_RATE_WINDOW_MS);
+  map[key] = entries;
+  saveResetRateMap(map);
+  return entries.length >= RESET_RATE_LIMIT;
+}
+
+function recordResetRequest(email) {
+  const key = (email || '').trim().toLowerCase();
+  const map = getResetRateMap();
+  const now = Date.now();
+  const entries = (map[key] || []).filter(t => now - t < RESET_RATE_WINDOW_MS);
+  entries.push(now);
+  map[key] = entries;
+  saveResetRateMap(map);
+}
+
+/**
+ * Email service config
+ * Pure browser apps cannot use Gmail SMTP without exposing credentials.
+ * From-address intended for production: jobtrackerp@gmail.com
+ *
+ * Offline (default): show username + password after email match.
+ * Optional EmailJS: fill EMAIL_CONFIG and load EmailJS SDK.
+ * Production: use a backend endpoint that sends mail server-side.
+ */
+const EMAIL_CONFIG = {
+  fromAddress: 'jobtrackerp@gmail.com',
+  emailjsPublicKey: '',
+  emailjsServiceId: '',
+  emailjsTemplateId: ''
+};
+
+function isEmailJsConfigured() {
+  return !!(EMAIL_CONFIG.emailjsPublicKey && EMAIL_CONFIG.emailjsServiceId && EMAIL_CONFIG.emailjsTemplateId && window.emailjs);
+}
+
+async function sendLoginDetailsEmail(user) {
+  if (!isEmailJsConfigured()) {
+    return { sent: false, reason: 'not_configured' };
+  }
+  try {
+    await window.emailjs.send(
+      EMAIL_CONFIG.emailjsServiceId,
+      EMAIL_CONFIG.emailjsTemplateId,
+      {
+        to_email: user.email,
+        username: user.username,
+        password: user.password,
+        from_name: 'JobTracker Pro',
+        from_email: EMAIL_CONFIG.fromAddress
+      },
+      EMAIL_CONFIG.emailjsPublicKey
+    );
+    return { sent: true };
+  } catch (err) {
+    console.warn('Email send failed:', err);
+    return { sent: false, reason: 'send_failed' };
+  }
+}
+
+async function requestLoginDetails(email) {
+  const normalized = (email || '').trim().toLowerCase();
+  if (isRateLimited(normalized)) {
+    return { ok: false, rateLimited: true };
+  }
+  recordResetRequest(normalized);
+
+  const user = findUserByEmail(normalized);
+  if (!user) {
+    return { ok: true, userFound: false };
+  }
+
+  const mail = await sendLoginDetailsEmail(user);
+  return {
+    ok: true,
+    userFound: true,
+    username: user.username,
+    password: user.password,
+    email: user.email,
+    emailSent: mail.sent,
+    emailReason: mail.reason || null
+  };
+}
+
+async function validateResetToken(token) {
+  if (!token) return { valid: false, reason: 'missing' };
+  const tokenHash = await hashToken(token);
+  const tokens = getResetTokens();
+  const entry = tokens.find(t => t.tokenHash === tokenHash);
+  if (!entry) return { valid: false, reason: 'invalid' };
+  if (entry.usedAt) return { valid: false, reason: 'used' };
+  if (Date.now() > entry.expiresAt) return { valid: false, reason: 'expired' };
+  const user = getUsers().find(u => u.id === entry.userId);
+  if (!user) return { valid: false, reason: 'invalid' };
+  return { valid: true, entry, user };
+}
+
+async function consumeResetToken(token, newPassword) {
+  const result = await validateResetToken(token);
+  if (!result.valid) return result;
+  const users = getUsers();
+  const idx = users.findIndex(u => u.id === result.user.id);
+  if (idx < 0) return { valid: false, reason: 'invalid' };
+  users[idx].password = newPassword;
+  saveUsers(users);
+  const tokens = getResetTokens();
+  const tIdx = tokens.findIndex(t => t.tokenHash === result.entry.tokenHash);
+  if (tIdx >= 0) {
+    tokens[tIdx].usedAt = Date.now();
+    saveResetTokens(tokens);
+  }
+  return { valid: true, user: users[idx] };
+}
+
+function handleForgotPassword() {
+  const email = (document.getElementById('forgotEmail')?.value || '').trim();
+  const errEl = document.getElementById('forgotEmailErr');
+  const boxErr = document.getElementById('forgotError');
+  const btn = document.getElementById('forgotSubmitBtn');
+  if (errEl) errEl.textContent = '';
+  if (boxErr) { boxErr.hidden = true; boxErr.textContent = ''; }
+
+  if (!email) {
+    if (errEl) errEl.textContent = 'Please enter your email address.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (errEl) errEl.textContent = 'Please enter a valid email address.';
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; }
+
+  requestLoginDetails(email).then(res => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Login Details'; }
+
+    if (res.rateLimited) {
+      if (boxErr) {
+        boxErr.textContent = 'Please wait before requesting login details again.';
+        boxErr.hidden = false;
+      }
+      return;
+    }
+
+    showAuthCard('forgotSentView');
+    const title = document.getElementById('forgotSentTitle');
+    const msg = document.getElementById('forgotSentMsg');
+    const credsBox = document.getElementById('credsRecoveryBox');
+    const notFound = document.getElementById('forgotNotFoundBox');
+    const note = document.getElementById('emailSendNote');
+
+    if (!res.userFound) {
+      if (title) title.textContent = 'No account found';
+      if (msg) msg.textContent = 'We could not find an account with that email address.';
+      if (credsBox) credsBox.hidden = true;
+      if (notFound) notFound.hidden = false;
+      return;
+    }
+
+    if (notFound) notFound.hidden = true;
+    if (title) title.textContent = 'Login details';
+    if (msg) {
+      msg.textContent = res.emailSent
+        ? 'Your login details have been sent to your email.'
+        : 'Your login credentials are shown below.';
+    }
+    if (credsBox) credsBox.hidden = false;
+    const uEl = document.getElementById('recoveredUsername');
+    const pEl = document.getElementById('recoveredPassword');
+    if (uEl) uEl.textContent = res.username || '—';
+    if (pEl) pEl.textContent = res.password || '—';
+    if (note) {
+      if (res.emailSent) {
+        note.textContent = 'An email was also sent from ' + EMAIL_CONFIG.fromAddress + ' to ' + res.email + '.';
+      } else {
+        note.textContent = 'Offline mode: email cannot be sent from the browser. For real email from ' + EMAIL_CONFIG.fromAddress + ', configure EmailJS or a backend mail service.';
+      }
+    }
+  }).catch(() => {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Login Details'; }
+    if (boxErr) {
+      boxErr.textContent = 'Something went wrong. Please try again.';
+      boxErr.hidden = false;
+    }
+  });
+}
+
+async function openResetWithToken(token) {
+  const result = await validateResetToken(token);
+  if (!result.valid) {
+    showAuthCard('forgotView');
+    const boxErr = document.getElementById('forgotError');
+    if (boxErr) {
+      if (result.reason === 'used') {
+        boxErr.textContent = 'This password reset link has already been used. Please request a new one.';
+      } else {
+        boxErr.textContent = 'This password reset link is invalid or has expired.';
+      }
+      boxErr.hidden = false;
+    }
+    return;
+  }
+  document.getElementById('resetToken').value = token;
+  document.getElementById('resetPassword').value = '';
+  document.getElementById('resetConfirm').value = '';
+  document.getElementById('resetPassErr').textContent = '';
+  document.getElementById('resetConfirmErr').textContent = '';
+  const re = document.getElementById('resetError');
+  if (re) { re.hidden = true; re.textContent = ''; }
+  showAuthCard('resetView');
+}
+
+async function handleResetPassword() {
+  const token = document.getElementById('resetToken')?.value || '';
+  const password = document.getElementById('resetPassword')?.value || '';
+  const confirm = document.getElementById('resetConfirm')?.value || '';
+  const passErr = document.getElementById('resetPassErr');
+  const confirmErr = document.getElementById('resetConfirmErr');
+  const boxErr = document.getElementById('resetError');
+  if (passErr) passErr.textContent = '';
+  if (confirmErr) confirmErr.textContent = '';
+  if (boxErr) { boxErr.hidden = true; boxErr.textContent = ''; }
+
+  let ok = true;
+  if (password.length < 8) {
+    if (passErr) passErr.textContent = 'Password must be at least 8 characters.';
+    ok = false;
+  } else if (!/\d/.test(password)) {
+    if (passErr) passErr.textContent = 'Password must contain at least one number.';
+    ok = false;
+  } else if (!/[^A-Za-z0-9]/.test(password)) {
+    if (passErr) passErr.textContent = 'Password must contain at least one special character.';
+    ok = false;
+  }
+  if (password !== confirm) {
+    if (confirmErr) confirmErr.textContent = 'Passwords do not match.';
+    ok = false;
+  }
+  if (!ok) return;
+
+  const result = await consumeResetToken(token, password);
+  if (!result.valid) {
+    if (boxErr) {
+      if (result.reason === 'used') {
+        boxErr.textContent = 'This password reset link has already been used.';
+      } else {
+        boxErr.textContent = 'This password reset link is invalid or has expired.';
+      }
+      boxErr.hidden = false;
+    }
+    return;
+  }
+  window.__devResetToken = null;
+  showAuthCard('resetSuccessView');
+  toast('Password reset successfully.');
+}
+
+function handleLogin() {
+  const username = (document.getElementById('loginUsername')?.value || '').trim();
+  const password = document.getElementById('loginPassword')?.value || '';
+  const remember = document.getElementById('rememberMe')?.checked || false;
+  const errorEl = document.getElementById('loginError');
+  const userErr = document.getElementById('loginUserErr');
+  const passErr = document.getElementById('loginPassErr');
+  if (userErr) userErr.textContent = '';
+  if (passErr) passErr.textContent = '';
+  if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+
+  let ok = true;
+  if (!username) {
+    if (userErr) userErr.textContent = 'Please enter your username.';
+    ok = false;
+  }
+  if (!password) {
+    if (passErr) passErr.textContent = 'Please enter your password.';
+    ok = false;
+  }
+  if (!ok) return;
+
+  const user = findUserByUsername(username);
+  if (!user || user.password !== password) {
+    if (errorEl) {
+      errorEl.textContent = 'Invalid username or password.';
+      errorEl.hidden = false;
+    }
+    return;
+  }
+
+  setSession(user, remember);
+  currentUser = {
+    id: user.id,
+    username: user.username,
+    fullName: user.fullName || user.username,
+    email: user.email || ''
+  };
+  showApp();
+  toast('Welcome back, ' + (user.fullName || user.username));
+}
+
+function handleRegister() {
+  const fullName = (document.getElementById('regName')?.value || '').trim();
+  const username = (document.getElementById('regUsername')?.value || '').trim();
+  const email = (document.getElementById('regEmail')?.value || '').trim();
+  const password = document.getElementById('regPassword')?.value || '';
+  const confirm = document.getElementById('regConfirm')?.value || '';
+  const errorEl = document.getElementById('registerError');
+
+  const errs = {
+    regNameErr: '', regUserErr: '', regEmailErr: '', regPassErr: '', regConfirmErr: ''
+  };
+  if (errorEl) { errorEl.hidden = true; errorEl.textContent = ''; }
+
+  let ok = true;
+  if (!fullName) { errs.regNameErr = 'Please enter your full name.'; ok = false; }
+  if (!username) { errs.regUserErr = 'Please choose a username.'; ok = false; }
+  else if (username.length < 3) { errs.regUserErr = 'Username must be at least 3 characters.'; ok = false; }
+  else if (findUserByUsername(username)) {
+    errs.regUserErr = 'That username is already registered. Please choose another.';
+    ok = false;
+  }
+  if (!email) { errs.regEmailErr = 'Please enter your email.'; ok = false; }
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errs.regEmailErr = 'Please enter a valid email address.';
+    ok = false;
+  }
+  if (!password) { errs.regPassErr = 'Please enter a password.'; ok = false; }
+  else if (password.length < 4) { errs.regPassErr = 'Password must contain at least 4 characters.'; ok = false; }
+  if (password !== confirm) { errs.regConfirmErr = 'Passwords do not match.'; ok = false; }
+
+  Object.keys(errs).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = errs[id];
+  });
+  if (!ok) return;
+
+  const user = {
+    id: generateUserId(),
+    username,
+    password,
+    fullName,
+    email
+  };
+  const users = getUsers();
+  users.push(user);
+  saveUsers(users);
+  saveUserData(user.id, { applications: [] });
+
+  showAuthCard('signInView');
+  document.getElementById('loginUsername').value = username;
+  document.getElementById('loginPassword').value = '';
+  toast('Account created successfully. Please sign in.');
+}
+
+function setupCredentialsForm() {
+  const form = document.getElementById('credentialsForm');
+  if (!form) return;
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    const newUsername = (document.getElementById('credUsername')?.value || '').trim();
+    const currentPass = document.getElementById('credCurrentPassword')?.value || '';
+    const newPass = document.getElementById('credNewPassword')?.value || '';
+    const confirmPass = document.getElementById('credConfirmPassword')?.value || '';
+
+    const users = getUsers();
+    const idx = users.findIndex(u => u.id === currentUser.id);
+    if (idx < 0) return;
+    if (currentPass !== users[idx].password) {
+      toast('Current password is incorrect', 'error');
+      return;
+    }
+    if (!newUsername) {
+      toast('Username cannot be empty', 'error');
+      return;
+    }
+    const conflict = users.find(u => u.username.toLowerCase() === newUsername.toLowerCase() && u.id !== currentUser.id);
+    if (conflict) {
+      toast('That username is already taken', 'error');
+      return;
+    }
+    users[idx].username = newUsername;
+    users[idx].fullName = users[idx].fullName || newUsername;
+    if (newPass) {
+      if (newPass.length < 4) {
+        toast('New password must be at least 4 characters', 'error');
+        return;
+      }
+      if (newPass !== confirmPass) {
+        toast('New passwords do not match', 'error');
+        return;
+      }
+      users[idx].password = newPass;
+    }
+    saveUsers(users);
+    currentUser.username = newUsername;
+    setSession({ ...users[idx] }, !!localStorage.getItem(SESSION_KEY));
+    updateUserHeader();
+    document.getElementById('credCurrentPassword').value = '';
+    document.getElementById('credNewPassword').value = '';
+    document.getElementById('credConfirmPassword').value = '';
+    toast('Credentials updated successfully');
+  });
+  // Prefill when settings opens — also on init
+  const userEl = document.getElementById('credUsername');
+  if (userEl && currentUser) userEl.value = currentUser.username || '';
+}
+
+// ---------- Theme ----------
+function loadTheme() {
+  const theme = localStorage.getItem(THEME_KEY) || 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeButton(theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  updateThemeButton(next);
+  // Re-render charts for theme-aware colors
+  if (document.getElementById('page-dashboard').classList.contains('active')) {
+    updateCharts();
+  }
+}
+
+function updateThemeButton(theme) {
+  const btn = document.getElementById('themeToggle');
+  if (btn) {
+    btn.innerHTML = theme === 'dark'
+      ? '<i class="fas fa-sun"></i><span>Light Mode</span>'
+      : '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+  }
+  const headerBtn = document.getElementById('themeToggleHeader');
+  if (headerBtn) {
+    headerBtn.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  }
+}
+
+document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+
+function setupHeaderTheme() {
+  document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+}
+
+// ---------- Navigation ----------
+function setupNav() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo(item.dataset.page);
+    });
+  });
+
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const closeBtn = document.getElementById('sidebarClose');
+
+  hamburger?.addEventListener('click', () => sidebar.classList.add('open'));
+  closeBtn?.addEventListener('click', () => sidebar.classList.remove('open'));
+
+  // Close sidebar on outside click (mobile)
+  document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+      if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+}
+
+function navigateTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+
+  const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  const titles = {
+    dashboard: 'Dashboard',
+    applications: 'All Applications',
+    add: 'Add Application',
+    interviews: 'Interviews',
+    followups: 'Follow-ups',
+    pipeline: 'Pipeline',
+    analytics: 'Analytics',
+    settings: 'Settings'
+  };
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+
+  // Close mobile sidebar
+  document.getElementById('sidebar')?.classList.remove('open');
+
+  // Reset form if navigating to add
+  if (page === 'add' && !document.getElementById('editId').value) {
+    resetForm();
+  }
+
+  // Re-render page-specific content
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'applications') renderApplicationsTable();
+  if (page === 'interviews') renderInterviews();
+  if (page === 'followups') renderFollowUps();
+  if (page === 'pipeline') renderKanban();
+  if (page === 'analytics') {
+    // Analytics is overall reporting only — never inherits Application/Dashboard filters
+    dashFilter = null;
+    const resetBtn = document.getElementById('resetFilterBtn');
+    if (resetBtn) {
+      resetBtn.style.display = 'none';
+      resetBtn.textContent = 'Reset';
+    }
+    renderAnalytics();
+  }
+  if (page === 'settings' && currentUser) {
+    const userEl = document.getElementById('credUsername');
+    if (userEl) userEl.value = currentUser.username || '';
+  }
+}
+
+// ---------- Helpers ----------
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function parseDate(d) {
+  if (!d) return null;
+  const dt = new Date(d + 'T00:00:00');
+  return isNaN(dt) ? null : dt;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = parseDate(d);
+  if (!dt) return d;
+  return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function daysDiff(d1, d2) {
+  const a = parseDate(d1);
+  const b = parseDate(d2);
+  if (!a || !b) return null;
+  return Math.round((a - b) / 86400000);
+}
+
+function statusBadgeClass(status) {
+  if (!status) return 'badge-applied';
+  const s = status.toLowerCase();
+  if (s.includes('offer received') || s === 'offer') return 'badge-offer';
+  if (s === 'accepted') return 'badge-accepted';
+  if (s === 'rejected') return 'badge-rejected';
+  if (s === 'withdrawn') return 'badge-withdrawn';
+  if (s === 'on hold') return 'badge-on-hold';
+  if (s.includes('technical') || s.includes('managerial') || s.includes('final') || s.includes('1st') || s.includes('2nd') || s.includes('hr round')) return 'badge-technical';
+  if (s.includes('interview')) return 'badge-interviewing';
+  if (s.includes('screening') || s.includes('submitted')) return 'badge-screening';
+  if (s === 'completed') return 'badge-completed';
+  if (s === 'wishlist') return 'badge-wishlist';
+  return 'badge-applied';
+}
+
+function statusBadge(status) {
+  return `<span class="badge ${statusBadgeClass(status)}">${status || '—'}</span>`;
+}
+
+function generateId() {
+  const now = new Date();
+  const mon = now.toLocaleString('en', { month: 'short' }).toUpperCase();
+  const existing = applications.map(a => a.id);
+  let n = 1;
+  let id;
+  do {
+    id = `${mon}-${String(n).padStart(3, '0')}`;
+    n++;
+  } while (existing.includes(id));
+  return id;
+}
+
+function toast(msg, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function updateCurrentDate() {
+  const el = document.getElementById('currentDate');
+  if (el) {
+    el.textContent = new Date().toLocaleDateString('en-IN', {
+      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    });
+  }
+}
+
+// ---------- KPI Calculations ----------
+function getKPIs(apps = applications) {
+  const total = apps.length;
+  const applied = apps.filter(a => {
+    const s = (a.status || '').toLowerCase();
+    return s === 'applied' || s === 'wishlist' || s.includes('submitted');
+  }).length;
+  const screening = apps.filter(a => {
+    const s = (a.status || '').toLowerCase();
+    return s.includes('screening');
+  }).length;
+  const interviewing = apps.filter(a => {
+    const s = (a.status || '').toLowerCase();
+    return s.includes('interview') || s.includes('technical') || s.includes('managerial') ||
+           s.includes('hr round') || s.includes('final') || s.includes('1st') || s.includes('2nd');
+  }).length;
+  const offers = apps.filter(a => {
+    const s = (a.status || '').toLowerCase();
+    return s.includes('offer') || s === 'accepted';
+  }).length;
+  const rejected = apps.filter(a => (a.status || '').toLowerCase() === 'rejected').length;
+  const withdrawn = apps.filter(a => (a.status || '').toLowerCase() === 'withdrawn').length;
+
+  const today = todayStr();
+  const followupsDue = apps.filter(a => {
+    if (!a.followUpDate) return false;
+    const st = (a.followUpStatus || '').toLowerCase();
+    if (st === 'completed' || st === 'no response needed') return false;
+    return a.followUpDate <= today;
+  }).length;
+
+  // Response rate: anything beyond pure "Applied" / "Wishlist"
+  const responded = apps.filter(a => {
+    const s = (a.status || '').toLowerCase();
+    return s && s !== 'applied' && s !== 'wishlist' && !s.includes('submitted');
+  }).length;
+  const responseRate = total ? Math.round((responded / total) * 100) : 0;
+
+  const interviewConversion = total ? Math.round((interviewing / total) * 100) : 0;
+  const offerConversion = total ? Math.round((offers / total) * 100) : 0;
+
+  return {
+    total, applied, screening, interviewing, offers, rejected, withdrawn,
+    followupsDue, responseRate, interviewConversion, offerConversion, responded
+  };
+}
+
+// ---------- Render All ----------
+function renderAll() {
+  updateSidebarBadges();
+  updateNotifBadge();
+  const activePage = document.querySelector('.page.active')?.id?.replace('page-', '') || 'dashboard';
+  if (activePage === 'dashboard') renderDashboard();
+  else if (activePage === 'applications') renderApplicationsTable();
+  else if (activePage === 'interviews') renderInterviews();
+  else if (activePage === 'followups') renderFollowUps();
+  else if (activePage === 'pipeline') renderKanban();
+  else if (activePage === 'analytics') renderAnalytics();
+}
+
+function updateSidebarBadges() {
+  const k = getKPIs();
+  const today = todayStr();
+  const upcomingInt = applications.filter(a =>
+    a.interviewDate && a.interviewDate >= today && (a.interviewRound || '').toLowerCase() !== 'completed'
+  ).length;
+
+  setBadge('badgeApps', applications.length);
+  setBadge('badgeInterviews', upcomingInt);
+  setBadge('badgeFollowups', k.followupsDue);
+}
+
+function setBadge(id, count) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = count;
+  el.setAttribute('data-count', count);
+}
+
+function buildNotifications() {
+  const today = todayStr();
+  const items = [];
+
+  applications.forEach(a => {
+    if (a.interviewDate && a.interviewDate >= today && (a.interviewRound || '').toLowerCase() !== 'completed') {
+      const isTomorrow = daysDiff(a.interviewDate, today) === 1;
+      items.push({
+        id: 'int-' + a.id,
+        type: 'interview',
+        title: isTomorrow
+          ? `Interview tomorrow with ${a.company}`
+          : `Interview scheduled with ${a.company}`,
+        meta: `${a.jobTitle || ''} · ${formatDate(a.interviewDate)}${a.interviewTime ? ' at ' + a.interviewTime : ''}`,
+        date: a.interviewDate,
+        appId: a.id
+      });
+    }
+    if (a.followUpDate) {
+      const st = (a.followUpStatus || '').toLowerCase();
+      if (st !== 'completed' && st !== 'no response needed') {
+        if (a.followUpDate < today) {
+          items.push({
+            id: 'fu-over-' + a.id,
+            type: 'followup',
+            title: `Overdue follow-up: ${a.company}`,
+            meta: `${a.jobTitle || ''} · was due ${formatDate(a.followUpDate)}`,
+            date: a.followUpDate,
+            appId: a.id
+          });
+        } else if (a.followUpDate === today) {
+          items.push({
+            id: 'fu-today-' + a.id,
+            type: 'followup',
+            title: `Follow-up due today: ${a.company}`,
+            meta: a.jobTitle || '',
+            date: a.followUpDate,
+            appId: a.id
+          });
+        } else if (daysDiff(a.followUpDate, today) <= 3) {
+          items.push({
+            id: 'fu-soon-' + a.id,
+            type: 'followup',
+            title: `Follow-up due soon: ${a.company}`,
+            meta: `${a.jobTitle || ''} · ${formatDate(a.followUpDate)}`,
+            date: a.followUpDate,
+            appId: a.id
+          });
+        }
+      }
+    }
+    const s = (a.status || '').toLowerCase();
+    if (s.includes('offer') || s === 'accepted') {
+      items.push({
+        id: 'offer-' + a.id,
+        type: 'status',
+        title: `Offer status: ${a.status} — ${a.company}`,
+        meta: a.jobTitle || '',
+        date: a.applicationDate || today,
+        appId: a.id
+      });
+    }
+  });
+
+  items.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  return items;
+}
+
+function getReadNotifs() {
+  if (!currentUser) return [];
+  try {
+    return JSON.parse(localStorage.getItem(NOTIF_READ_PREFIX + currentUser.id) || '[]');
+  } catch { return []; }
+}
+
+function setReadNotifs(ids) {
+  if (!currentUser) return;
+  localStorage.setItem(NOTIF_READ_PREFIX + currentUser.id, JSON.stringify(ids));
+}
+
+function updateNotifBadge() {
+  const items = buildNotifications();
+  const read = getReadNotifs();
+  const unread = items.filter(i => !read.includes(i.id)).length;
+  const countEl = document.getElementById('notifCount');
+  if (countEl) {
+    countEl.textContent = unread;
+    countEl.setAttribute('data-count', unread);
+  }
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notifList');
+  if (!list) return;
+  const items = buildNotifications();
+  const read = getReadNotifs();
+  if (!items.length) {
+    list.innerHTML = '<div class="notif-empty">No new notifications</div>';
+    return;
+  }
+  list.innerHTML = items.map(n => `
+    <div class="notif-item ${read.includes(n.id) ? '' : 'unread'}" data-id="${n.id}" data-app="${n.appId || ''}">
+      <div class="ni-title">${esc(n.title)}</div>
+      <div class="ni-meta">${esc(n.meta)}</div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.notif-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      const appId = el.dataset.app;
+      const readIds = getReadNotifs();
+      if (!readIds.includes(id)) {
+        readIds.push(id);
+        setReadNotifs(readIds);
+        updateNotifBadge();
+        el.classList.remove('unread');
+      }
+      if (appId) {
+        document.getElementById('notifPanel').hidden = true;
+        viewApp(appId);
+      }
+    });
+  });
+}
+
+function setupNotificationsUI() {
+  const bell = document.getElementById('notifBell');
+  const panel = document.getElementById('notifPanel');
+  if (!bell || !panel) return;
+
+  bell.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = !panel.hidden;
+    panel.hidden = open;
+    if (!open) renderNotifPanel();
+    // close export menu
+    const em = document.getElementById('exportMenu');
+    if (em) em.hidden = true;
+  });
+
+  document.getElementById('markAllRead')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const items = buildNotifications();
+    setReadNotifs(items.map(i => i.id));
+    updateNotifBadge();
+    renderNotifPanel();
+    toast('All notifications marked as read');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!panel.hidden && !panel.contains(e.target) && !bell.contains(e.target)) {
+      panel.hidden = true;
+    }
+  });
+}
+
+function setupExportMenu() {
+  const btn = document.getElementById('exportBtn');
+  const menu = document.getElementById('exportMenu');
+  if (!btn || !menu) return;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+    btn.setAttribute('aria-expanded', String(!menu.hidden));
+    const panel = document.getElementById('notifPanel');
+    if (panel) panel.hidden = true;
+  });
+  document.addEventListener('click', (e) => {
+    if (!menu.hidden && !menu.contains(e.target) && !btn.contains(e.target)) {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+  menu.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => { menu.hidden = true; });
+  });
+}
+
+// ---------- Dashboard ----------
+function normalizeLocation(loc) {
+  if (!loc) return 'Other';
+  const s = String(loc).trim();
+  return s.includes(',') ? s.split(',')[0].trim() : s;
+}
+
+function renderDashboard() {
+  // Charts always use the FULL dataset so labels/indexes stay stable after a click-filter.
+  // KPIs, insights, and recent apps respect the active dashFilter.
+  const filtered = dashFilter ? filterByDashFilter(applications) : applications;
+  renderKPIs(filtered);
+  updateCharts(); // always full dataset — never filtered
+  renderInsights(filtered);
+  renderUpcomingEvents();
+  renderRecentApps(filtered);
+  const resetBtn = document.getElementById('resetFilterBtn');
+  if (resetBtn) {
+    resetBtn.style.display = dashFilter ? 'inline-flex' : 'none';
+    if (dashFilter) {
+      const label = dashFilter.type === 'month'
+        ? ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dashFilter.value - 1]
+        : dashFilter.value;
+      resetBtn.textContent = `Reset Filter (${dashFilter.type}: ${label})`;
+    }
+  }
+}
+
+/** Match an app status against a chart/pipeline filter value (exact or group). */
+function statusMatchesFilter(appStatus, filterValue) {
+  const s = (appStatus || '').toLowerCase();
+  const v = (filterValue || '').toLowerCase();
+  if (!v) return true;
+  // Exact match first
+  if (s === v) return true;
+  // Pipeline group matches
+  if (v === 'applied') return s === 'applied' || s === 'wishlist' || s.includes('submitted');
+  if (v === 'hr screening' || v === 'screening') return s.includes('screening');
+  if (v === 'interviewing') return s === 'interviewing' || s.includes('1st') || s.includes('2nd') || s.includes('managerial') || s.includes('hr round');
+  if (v === 'technical round' || v === 'technical') return s.includes('technical');
+  if (v === 'final round' || v === 'final') return s.includes('final');
+  if (v === 'offer received' || v === 'offer') return s.includes('offer');
+  if (v === 'accepted') return s === 'accepted';
+  // Partial contains for flexibility
+  return s.includes(v) || v.includes(s);
+}
+
+function filterByDashFilter(apps) {
+  if (!dashFilter) return apps;
+  const { type, value } = dashFilter;
+  if (type === 'status') {
+    return apps.filter(a => statusMatchesFilter(a.status, value));
+  }
+  if (type === 'location') {
+    return apps.filter(a => normalizeLocation(a.location) === value);
+  }
+  if (type === 'month') {
+    return apps.filter(a => {
+      if (!a.applicationDate) return false;
+      const m = parseInt(a.applicationDate.slice(5, 7), 10);
+      return m === value;
+    });
+  }
+  if (type === 'company') {
+    return apps.filter(a => (a.company || '') === value);
+  }
+  return apps;
+}
+
+function applyChartFilter(type, value) {
+  // Chart filters apply to All Applications only — never to Analytics
+  dashFilter = { type, value };
+  syncTableFiltersFromDash();
+  navigateTo('applications');
+  renderApplicationsTable();
+  toast(`Applications: ${value}`);
+}
+
+function syncTableFiltersFromDash() {
+  if (!dashFilter) return;
+  // Clear table filters first
+  const statusEl = document.getElementById('filterStatus');
+  const locEl = document.getElementById('filterLocation');
+  if (dashFilter.type === 'status' && statusEl) {
+    // Ensure option exists
+    populateFilterDropdowns();
+    statusEl.value = dashFilter.value;
+  }
+  if (dashFilter.type === 'location' && locEl) {
+    populateFilterDropdowns();
+    // Try exact match against full location strings that start with city
+    const match = [...locEl.options].find(o => normalizeLocation(o.value) === dashFilter.value);
+    if (match) locEl.value = match.value;
+  }
+}
+
+function resetDashboardFilter() {
+  dashFilter = null;
+  // Clear related table filters
+  const statusEl = document.getElementById('filterStatus');
+  const locEl = document.getElementById('filterLocation');
+  if (statusEl) statusEl.value = '';
+  if (locEl) locEl.value = '';
+  renderDashboard();
+  if (document.getElementById('page-applications')?.classList.contains('active')) {
+    renderApplicationsTable();
+  }
+  toast('Filter cleared');
+}
+
+function renderKPIs(apps) {
+  const k = getKPIs(apps);
+  const grid = document.getElementById('kpiGrid');
+  if (!grid) return;
+  const cards = [
+    { label: 'Total', value: k.total, icon: 'fa-folder', color: 'blue', action: () => navigateTo('applications') },
+    { label: 'Applied', value: k.applied, icon: 'fa-paper-plane', color: 'purple', action: () => { dashFilter = { type: 'status', value: 'Applied' }; navigateTo('applications'); renderApplicationsTable(); } },
+    { label: 'Shortlisted', value: k.screening, icon: 'fa-check-circle', color: 'cyan', action: () => { dashFilter = { type: 'status', value: 'HR Screening' }; navigateTo('applications'); renderApplicationsTable(); } },
+    { label: 'Interviews', value: k.interviewing, icon: 'fa-video', color: 'orange', action: () => navigateTo('interviews') },
+    { label: 'Offers', value: k.offers, icon: 'fa-trophy', color: 'green', action: () => { dashFilter = { type: 'status', value: 'Offer Received' }; navigateTo('applications'); renderApplicationsTable(); } },
+    { label: 'Rejected', value: k.rejected, icon: 'fa-times-circle', color: 'red', action: () => { dashFilter = { type: 'status', value: 'Rejected' }; navigateTo('applications'); renderApplicationsTable(); } },
+    { label: 'Follow-ups Due', value: k.followupsDue, icon: 'fa-bell', color: 'yellow', action: () => navigateTo('followups') },
+    { label: 'Response Rate', value: k.responseRate + '%', icon: 'fa-chart-line', color: 'indigo', action: () => navigateTo('analytics') }
+  ];
+  grid.innerHTML = cards.map((c, i) => `
+    <div class="kpi-card" data-kpi="${i}" role="button" tabindex="0">
+      <div class="kpi-top">
+        <div class="kpi-icon-box ${c.color}"><i class="fas ${c.icon}"></i></div>
+        <span class="kpi-label">${c.label}</span>
+      </div>
+      <div class="kpi-value">${c.value}</div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.kpi-card').forEach((el, i) => {
+    el.addEventListener('click', () => cards[i].action());
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cards[i].action(); } });
+  });
+}
+
+// ---------- Charts ----------
+function getChartColors() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    text: dark ? '#94a3b8' : '#6c757d',
+    grid: dark ? '#334155' : '#e0e4e8',
+    palette: ['#4361ee', '#8b5cf6', '#06b6d4', '#f97316', '#10b981', '#ef4444', '#ec4899', '#f59e0b', '#6366f1', '#14b8a6']
+  };
+}
+
+function destroyChart(name) {
+  if (charts[name]) {
+    charts[name].destroy();
+    charts[name] = null;
+  }
+}
+
+/**
+ * Resolve the clicked data index from a Chart.js event.
+ * Uses getElementsAtEventForMode for reliable hit-testing (especially line charts).
+ */
+function getClickedIndex(event, chart, mode) {
+  if (!chart) return -1;
+  const elems = chart.getElementsAtEventForMode(
+    event,
+    mode || 'nearest',
+    { intersect: true },
+    true
+  );
+  if (elems && elems.length) return elems[0].index;
+  // Fallback: non-intersecting nearest (helps thin line charts)
+  const near = chart.getElementsAtEventForMode(
+    event,
+    'nearest',
+    { intersect: false },
+    true
+  );
+  if (near && near.length) return near[0].index;
+  return -1;
+}
+
+function updateCharts() {
+  // Always build from the full applications array so click indexes stay valid.
+  const apps = applications;
+  const colors = getChartColors();
+
+  // ---- Status doughnut ----
+  destroyChart('status');
+  const statusCounts = {};
+  apps.forEach(a => {
+    const s = a.status || 'Unknown';
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+  const statusLabels = Object.keys(statusCounts);
+  const statusData = Object.values(statusCounts);
+
+  charts.status = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: statusLabels,
+      datasets: [{
+        data: statusData,
+        backgroundColor: colors.palette.slice(0, statusLabels.length),
+        borderWidth: 2,
+        borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: colors.text, boxWidth: 12, font: { size: 11 } },
+          onClick: (e, legendItem, legend) => {
+            // Legend click also filters by status
+            const idx = legendItem.index;
+            if (idx != null && statusLabels[idx]) {
+              applyChartFilter('status', statusLabels[idx], `Filtered by status: ${statusLabels[idx]}`);
+            }
+          }
+        }
+      },
+      onClick: (event, _elements, chart) => {
+        const idx = getClickedIndex(event, chart, 'nearest');
+        if (idx >= 0 && statusLabels[idx]) {
+          applyChartFilter('status', statusLabels[idx], `Filtered by status: ${statusLabels[idx]}`);
+        }
+      }
+    }
+  });
+
+  // ---- Location bar ----
+  destroyChart('location');
+  const locCounts = {};
+  apps.forEach(a => {
+    const loc = normalizeLocation(a.location);
+    locCounts[loc] = (locCounts[loc] || 0) + 1;
+  });
+  const locLabels = Object.keys(locCounts).sort((a, b) => locCounts[b] - locCounts[a]);
+  const locData = locLabels.map(l => locCounts[l]);
+
+  charts.location = new Chart(document.getElementById('locationChart'), {
+    type: 'bar',
+    data: {
+      labels: locLabels,
+      datasets: [{ label: 'Applications', data: locData, backgroundColor: colors.palette[0], borderRadius: 6 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: colors.text }, grid: { display: false } },
+        y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+      },
+      onClick: (event, _elements, chart) => {
+        const idx = getClickedIndex(event, chart, 'nearest');
+        if (idx >= 0 && locLabels[idx]) {
+          applyChartFilter('location', locLabels[idx], `Filtered by location: ${locLabels[idx]}`);
+        }
+      }
+    }
+  });
+
+  // ---- Month line ----
+  destroyChart('month');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthCounts = new Array(12).fill(0);
+  apps.forEach(a => {
+    if (a.applicationDate) {
+      const m = parseInt(a.applicationDate.slice(5, 7), 10) - 1;
+      if (m >= 0 && m < 12) monthCounts[m]++;
+    }
+  });
+
+  charts.month = new Chart(document.getElementById('monthChart'), {
+    type: 'line',
+    data: {
+      labels: monthNames,
+      datasets: [{
+        label: 'Applications',
+        data: monthCounts,
+        borderColor: colors.palette[0],
+        backgroundColor: colors.palette[0] + '33',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        pointHitRadius: 20
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: colors.text }, grid: { display: false } },
+        y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+      },
+      onClick: (event, _elements, chart) => {
+        // Use intersect:false so clicking near a point still registers
+        const idx = getClickedIndex(event, chart, 'index');
+        if (idx >= 0) {
+          applyChartFilter('month', idx + 1, `Filtered by month: ${monthNames[idx]}`);
+        }
+      }
+    }
+  });
+
+  // ---- Company horizontal bar (top 10) ----
+  destroyChart('company');
+  const companyCounts = {};
+  apps.forEach(a => {
+    const c = a.company || 'Unknown';
+    companyCounts[c] = (companyCounts[c] || 0) + 1;
+  });
+  const sortedCompanies = Object.entries(companyCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const compLabels = sortedCompanies.map(c => c[0]);
+  const compData = sortedCompanies.map(c => c[1]);
+
+  charts.company = new Chart(document.getElementById('companyChart'), {
+    type: 'bar',
+    data: {
+      labels: compLabels,
+      datasets: [{ label: 'Applications', data: compData, backgroundColor: colors.palette[1], borderRadius: 6 }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true },
+        y: { ticks: { color: colors.text }, grid: { display: false } }
+      },
+      onClick: (event, _elements, chart) => {
+        const idx = getClickedIndex(event, chart, 'nearest');
+        if (idx >= 0 && compLabels[idx]) {
+          applyChartFilter('company', compLabels[idx], `Filtered by company: ${compLabels[idx]}`);
+        }
+      }
+    }
+  });
+
+  // ---- Pipeline funnel-style bar ----
+  destroyChart('pipeline');
+  const pipelineOrder = ['Applied', 'HR Screening', 'Interviewing', 'Technical Round', 'Final Round', 'Offer Received', 'Accepted'];
+  const pipelineStatusMap = {
+    'Applied': 'Applied',
+    'HR Screening': 'HR Screening',
+    'Interviewing': 'Interviewing',
+    'Technical Round': 'Technical Round',
+    'Final Round': 'Final Round',
+    'Offer Received': 'Offer Received',
+    'Accepted': 'Accepted'
+  };
+  const pipelineCounts = pipelineOrder.map(stage => {
+    return apps.filter(a => {
+      const s = (a.status || '').toLowerCase();
+      if (stage === 'Applied') return s === 'applied' || s === 'wishlist' || s.includes('submitted');
+      if (stage === 'HR Screening') return s.includes('screening');
+      if (stage === 'Interviewing') return s === 'interviewing' || s.includes('1st') || s.includes('2nd') || s.includes('managerial') || s.includes('hr round');
+      if (stage === 'Technical Round') return s.includes('technical');
+      if (stage === 'Final Round') return s.includes('final');
+      if (stage === 'Offer Received') return s.includes('offer');
+      if (stage === 'Accepted') return s === 'accepted';
+      return false;
+    }).length;
+  });
+
+  charts.pipeline = new Chart(document.getElementById('pipelineChart'), {
+    type: 'bar',
+    data: {
+      labels: pipelineOrder,
+      datasets: [{
+        label: 'Count',
+        data: pipelineCounts,
+        backgroundColor: ['#4361ee', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899', '#10b981', '#059669'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: colors.text, maxRotation: 45 }, grid: { display: false } },
+        y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+      },
+      onClick: (event, _elements, chart) => {
+        const idx = getClickedIndex(event, chart, 'nearest');
+        if (idx >= 0 && pipelineOrder[idx]) {
+          // Pipeline stages are aggregates — filter by matching status group
+          const stage = pipelineOrder[idx];
+          // Store as status filter using the canonical status label when possible
+          applyChartFilter('status', pipelineStatusMap[stage] || stage, `Filtered by pipeline stage: ${stage}`);
+        }
+      }
+    }
+  });
+}
+
+// ---------- Insights ----------
+function renderInsights(apps = applications) {
+  const insights = [];
+  const k = getKPIs(apps);
+  const today = todayStr();
+
+  if (k.total === 0) {
+    insights.push('No applications yet. Start by adding your first job application!');
+  } else {
+    if (k.responseRate < 30 && k.total >= 5) {
+      insights.push(`You have applied to ${k.total} roles but response rate is only ${k.responseRate}%. Consider refining your resume or targeting more relevant roles.`);
+    }
+    if (k.interviewConversion > 0) {
+      insights.push(`Interview conversion rate: ${k.interviewConversion}%. Offer conversion: ${k.offerConversion}%.`);
+    }
+    // Most applied location
+    const locCounts = {};
+    apps.forEach(a => {
+      let loc = (a.location || 'Other').split(',')[0].trim();
+      locCounts[loc] = (locCounts[loc] || 0) + 1;
+    });
+    const topLoc = Object.entries(locCounts).sort((a, b) => b[1] - a[1])[0];
+    if (topLoc) insights.push(`Highest number of applications are in ${topLoc[0]} (${topLoc[1]} apps).`);
+
+    // Follow-ups this week
+    const weekEnd = new Date();
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    const weekEndStr = weekEnd.toISOString().slice(0, 10);
+    const weekFollowups = apps.filter(a => {
+      if (!a.followUpDate) return false;
+      const st = (a.followUpStatus || '').toLowerCase();
+      if (st === 'completed' || st === 'no response needed') return false;
+      return a.followUpDate >= today && a.followUpDate <= weekEndStr;
+    }).length;
+    if (weekFollowups > 0) insights.push(`You have ${weekFollowups} application(s) requiring follow-up this week.`);
+
+    // Overdue
+    const overdue = apps.filter(a => {
+      if (!a.followUpDate) return false;
+      const st = (a.followUpStatus || '').toLowerCase();
+      if (st === 'completed' || st === 'no response needed') return false;
+      return a.followUpDate < today;
+    });
+    if (overdue.length > 0) insights.push(`You have ${overdue.length} overdue follow-up(s). Prioritize contacting these recruiters.`);
+
+    // Old applications without response
+    const oldNoResponse = apps.filter(a => {
+      const s = (a.status || '').toLowerCase();
+      if (s !== 'applied' && !s.includes('submitted')) return false;
+      if (!a.applicationDate) return false;
+      return daysDiff(today, a.applicationDate) > 7;
+    });
+    if (oldNoResponse.length > 0) {
+      insights.push(`${oldNoResponse.length} application(s) submitted over 7 days ago with no response yet.`);
+    }
+
+    // Avg per month
+    const dates = apps.map(a => a.applicationDate).filter(Boolean).sort();
+    if (dates.length >= 2) {
+      const first = parseDate(dates[0]);
+      const last = parseDate(dates[dates.length - 1]);
+      if (first && last) {
+        const months = Math.max(1, (last - first) / (30 * 86400000));
+        const avgMonth = (apps.length / months).toFixed(1);
+        insights.push(`Average applications per month: ~${avgMonth}.`);
+      }
+    }
+  }
+
+  const el = document.getElementById('insightsList');
+  if (!insights.length) {
+    el.innerHTML = '<div class="empty-state">No insights available yet.</div>';
+  } else {
+    el.innerHTML = insights.map(i => `<div class="insight-item"><i class="fas fa-lightbulb"></i>${i}</div>`).join('');
+  }
+}
+
+// ---------- Upcoming events ----------
+function renderUpcomingEvents() {
+  const today = todayStr();
+
+  // Interviews
+  const interviews = applications
+    .filter(a => a.interviewDate && a.interviewDate >= today && (a.interviewRound || '').toLowerCase() !== 'completed')
+    .sort((a, b) => a.interviewDate.localeCompare(b.interviewDate))
+    .slice(0, 5);
+
+  const intEl = document.getElementById('upcomingInterviews');
+  if (!interviews.length) {
+    intEl.innerHTML = '<div class="empty-state">No upcoming interviews</div>';
+  } else {
+    intEl.innerHTML = interviews.map(a => `
+      <div class="event-item">
+        <div class="ei-company">${esc(a.company)} — ${esc(a.jobTitle)}</div>
+        <div class="ei-meta">${formatDate(a.interviewDate)}${a.interviewTime ? ' at ' + a.interviewTime : ''} · ${esc(a.interviewRound || '')}</div>
+      </div>
+    `).join('');
+  }
+
+  // Follow-ups
+  const followups = applications
+    .filter(a => {
+      if (!a.followUpDate) return false;
+      const st = (a.followUpStatus || '').toLowerCase();
+      return st !== 'completed' && st !== 'no response needed';
+    })
+    .sort((a, b) => a.followUpDate.localeCompare(b.followUpDate))
+    .slice(0, 5);
+
+  const fuEl = document.getElementById('upcomingFollowups');
+  if (!followups.length) {
+    fuEl.innerHTML = '<div class="empty-state">No pending follow-ups</div>';
+  } else {
+    fuEl.innerHTML = followups.map(a => {
+      const overdue = a.followUpDate < today;
+      return `
+        <div class="event-item">
+          <div class="ei-company">${overdue ? '🔴 ' : '🟡 '}${esc(a.company)} — ${esc(a.jobTitle)}</div>
+          <div class="ei-meta">${formatDate(a.followUpDate)} · ${esc(a.followUpStatus || 'Due')}</div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function renderRecentApps(apps = applications) {
+  const recent = [...apps].sort((a, b) => (b.applicationDate || '').localeCompare(a.applicationDate || '')).slice(0, 8);
+  const el = document.getElementById('recentAppsTable');
+  if (!recent.length) {
+    el.innerHTML = '<div class="empty-state">No applications yet</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table class="data-table">
+      <thead><tr><th>Company</th><th>Job Title</th><th>Location</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+        ${recent.map(a => `
+          <tr>
+            <td>${esc(a.company)}</td>
+            <td>${esc(a.jobTitle)}</td>
+            <td>${esc(a.location || '—')}</td>
+            <td>${formatDate(a.applicationDate)}</td>
+            <td>${statusBadge(a.status)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// ---------- Applications Table ----------
+function setupSearch() {
+  document.getElementById('globalSearch')?.addEventListener('input', debounce(() => {
+    if (document.getElementById('page-applications').classList.contains('active')) {
+      renderApplicationsTable();
+    }
+  }, 250));
+
+  ['filterStatus', 'filterLocation', 'filterWorkMode', 'filterSource', 'filterRound', 'filterDateFrom', 'filterDateTo'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', () => renderApplicationsTable());
+  });
+}
+
+function debounce(fn, ms) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+function populateFilterDropdowns() {
+  const statuses = [...new Set(applications.map(a => a.status).filter(Boolean))].sort();
+  const locations = [...new Set(applications.map(a => a.location).filter(Boolean))].sort();
+  const modes = [...new Set(applications.map(a => a.workMode).filter(Boolean))].sort();
+  const sources = [...new Set(applications.map(a => a.source).filter(Boolean))].sort();
+  const rounds = [...new Set(applications.map(a => a.interviewRound).filter(Boolean))].sort();
+
+  fillSelect('filterStatus', statuses);
+  fillSelect('filterLocation', locations);
+  fillSelect('filterWorkMode', modes);
+  fillSelect('filterSource', sources);
+  fillSelect('filterRound', rounds);
+}
+
+function fillSelect(id, options) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const current = sel.value;
+  const first = sel.options[0];
+  sel.innerHTML = '';
+  sel.appendChild(first);
+  options.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o;
+    opt.textContent = o;
+    sel.appendChild(opt);
+  });
+  sel.value = current;
+}
+
+function getFilteredApps() {
+  let apps = [...applications];
+
+  // Apply dashboard chart filter first (company / month / status group / location)
+  if (dashFilter) {
+    apps = filterByDashFilter(apps);
+  }
+
+  const q = (document.getElementById('globalSearch')?.value || '').toLowerCase().trim();
+  const status = document.getElementById('filterStatus')?.value || '';
+  const location = document.getElementById('filterLocation')?.value || '';
+  const workMode = document.getElementById('filterWorkMode')?.value || '';
+  const source = document.getElementById('filterSource')?.value || '';
+  const round = document.getElementById('filterRound')?.value || '';
+  const dateFrom = document.getElementById('filterDateFrom')?.value || '';
+  const dateTo = document.getElementById('filterDateTo')?.value || '';
+
+  if (q) {
+    apps = apps.filter(a =>
+      (a.company || '').toLowerCase().includes(q) ||
+      (a.jobTitle || '').toLowerCase().includes(q) ||
+      (a.hrName || '').toLowerCase().includes(q) ||
+      (a.location || '').toLowerCase().includes(q) ||
+      (a.status || '').toLowerCase().includes(q) ||
+      (a.notes || '').toLowerCase().includes(q) ||
+      (a.id || '').toLowerCase().includes(q)
+    );
+  }
+  // Only apply dropdown status/location if dashFilter is not already driving them
+  if (status && !(dashFilter && dashFilter.type === 'status')) {
+    apps = apps.filter(a => a.status === status);
+  }
+  if (location && !(dashFilter && dashFilter.type === 'location')) {
+    apps = apps.filter(a => a.location === location);
+  }
+  if (workMode) apps = apps.filter(a => a.workMode === workMode);
+  if (source) apps = apps.filter(a => a.source === source);
+  if (round) apps = apps.filter(a => a.interviewRound === round);
+  if (dateFrom) apps = apps.filter(a => a.applicationDate && a.applicationDate >= dateFrom);
+  if (dateTo) apps = apps.filter(a => a.applicationDate && a.applicationDate <= dateTo);
+
+  return apps.sort((a, b) => (b.applicationDate || '').localeCompare(a.applicationDate || ''));
+}
+
+function renderApplicationsTable() {
+  populateFilterDropdowns();
+  const apps = getFilteredApps();
+  const tbody = document.getElementById('appsTableBody');
+  if (!apps.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty-state">No applications found</td></tr>';
+    return;
+  }
+  tbody.innerHTML = apps.map(a => `
+    <tr>
+      <td>${esc(a.id)}</td>
+      <td>${formatDate(a.applicationDate)}</td>
+      <td>${esc(a.company)}</td>
+      <td>${esc(a.jobTitle)}</td>
+      <td>${esc(a.location || '—')}</td>
+      <td>${esc(a.workMode || '—')}</td>
+      <td>${statusBadge(a.status)}</td>
+      <td>${esc(a.interviewRound || '—')}</td>
+      <td>${formatDate(a.interviewDate)}</td>
+      <td>${formatDate(a.followUpDate)}</td>
+      <td class="actions-cell">
+        <button class="btn-icon" title="View" onclick="viewApp('${a.id}')"><i class="fas fa-eye"></i></button>
+        <button class="btn-icon" title="Edit" onclick="editApp('${a.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn-icon danger" title="Delete" onclick="deleteApp('${a.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function clearFilters() {
+  document.getElementById('globalSearch').value = '';
+  document.getElementById('filterStatus').value = '';
+  document.getElementById('filterLocation').value = '';
+  document.getElementById('filterWorkMode').value = '';
+  document.getElementById('filterSource').value = '';
+  document.getElementById('filterRound').value = '';
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  dashFilter = null;
+  const resetBtn = document.getElementById('resetFilterBtn');
+  if (resetBtn) resetBtn.style.display = 'none';
+  renderApplicationsTable();
+}
+
+// ---------- CRUD ----------
+function setupForm() {
+  document.getElementById('appForm')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    saveForm();
+  });
+}
+
+function validateForm() {
+  let ok = true;
+  const appId = document.getElementById('fId');
+  const company = document.getElementById('fCompany');
+  const title = document.getElementById('fTitle');
+  const appDate = document.getElementById('fAppDate');
+  const email = document.getElementById('fHrEmail');
+  const phone = document.getElementById('fHrPhone');
+  const editId = document.getElementById('editId').value;
+
+  document.querySelectorAll('.form-group input, .form-group select').forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+
+  if (!appId.value.trim()) {
+    appId.classList.add('error');
+    if (appId.nextElementSibling) appId.nextElementSibling.textContent = 'Please enter application ID.';
+    ok = false;
+  } else {
+    // Unique ID when creating or if ID changed
+    const conflict = applications.find(a => a.id === appId.value.trim() && a.id !== editId);
+    if (conflict) {
+      appId.classList.add('error');
+      if (appId.nextElementSibling) appId.nextElementSibling.textContent = 'This Application ID already exists.';
+      ok = false;
+    }
+  }
+  if (!company.value.trim()) {
+    company.classList.add('error');
+    if (company.nextElementSibling) company.nextElementSibling.textContent = 'Please enter company name.';
+    ok = false;
+  }
+  if (!title.value.trim()) {
+    title.classList.add('error');
+    if (title.nextElementSibling) title.nextElementSibling.textContent = 'Please enter job title.';
+    ok = false;
+  }
+  if (!appDate.value) {
+    appDate.classList.add('error');
+    if (appDate.nextElementSibling) appDate.nextElementSibling.textContent = 'Please select application date.';
+    ok = false;
+  }
+  if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    email.classList.add('error');
+    if (email.nextElementSibling) email.nextElementSibling.textContent = 'Please enter a valid email address.';
+    ok = false;
+  }
+  if (phone.value && !/^[\d\s+\-()]{7,15}$/.test(phone.value.replace(/\s/g, ''))) {
+    phone.classList.add('error');
+    if (phone.nextElementSibling) phone.nextElementSibling.textContent = 'Please enter a valid phone number.';
+    ok = false;
+  }
+  return ok;
+}
+
+function saveForm() {
+  const editId = document.getElementById('editId').value;
+  const data = {
+    id: document.getElementById('fId').value.trim() || editId || generateId(),
+    applicationDate: document.getElementById('fAppDate').value,
+    company: document.getElementById('fCompany').value.trim(),
+    jobTitle: document.getElementById('fTitle').value.trim(),
+    location: document.getElementById('fLocation').value.trim(),
+    workMode: document.getElementById('fWorkMode').value,
+    hrName: document.getElementById('fHrName').value.trim(),
+    hrPhone: document.getElementById('fHrPhone').value.trim(),
+    hrEmail: document.getElementById('fHrEmail').value.trim(),
+    source: document.getElementById('fSource').value,
+    status: document.getElementById('fStatus').value,
+    interviewRound: document.getElementById('fRound').value,
+    interviewDate: document.getElementById('fIntDate').value,
+    interviewTime: document.getElementById('fIntTime').value,
+    salary: document.getElementById('fSalary').value.trim(),
+    followUpDate: document.getElementById('fFollowDate').value,
+    followUpStatus: document.getElementById('fFollowStatus').value,
+    offerStatus: document.getElementById('fOfferStatus').value,
+    notes: document.getElementById('fNotes').value.trim()
+  };
+
+  if (data.followUpDate) {
+    const today = todayStr();
+    if (data.followUpStatus !== 'Completed' && data.followUpStatus !== 'No Response Needed') {
+      if (data.followUpDate < today) data.followUpStatus = 'Overdue';
+      else if (data.followUpDate === today) data.followUpStatus = 'Due';
+    }
+  }
+
+  if (editId) {
+    const idx = applications.findIndex(a => a.id === editId);
+    if (idx >= 0) applications[idx] = data;
+    toast('Application saved successfully.');
+  } else {
+    applications.push(data);
+    toast('Application saved successfully.');
+  }
+
+  saveApplications();
+  resetForm();
+  navigateTo('applications');
+  renderAll();
+}
+
+function resetForm() {
+  document.getElementById('appForm').reset();
+  document.getElementById('editId').value = '';
+  document.getElementById('formTitle').textContent = 'Add New Application';
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) saveBtn.innerHTML = '<i class="fas fa-check"></i> Save Application';
+  document.getElementById('fId').value = generateId();
+  document.getElementById('fAppDate').value = todayStr();
+  document.getElementById('fStatus').value = 'Applied';
+  document.getElementById('fRound').value = 'Not Started';
+  document.getElementById('fFollowStatus').value = 'Not Due';
+  document.getElementById('fOfferStatus').value = 'Not Applicable';
+  document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+  document.querySelectorAll('.form-group input, .form-group select').forEach(el => el.classList.remove('error'));
+}
+
+function cancelForm() {
+  resetForm();
+  navigateTo('applications');
+}
+
+function editApp(id) {
+  const app = applications.find(a => a.id === id);
+  if (!app) return;
+  document.getElementById('editId').value = app.id;
+  document.getElementById('fId').value = app.id || '';
+  document.getElementById('fCompany').value = app.company || '';
+  document.getElementById('fTitle').value = app.jobTitle || '';
+  document.getElementById('fLocation').value = app.location || '';
+  document.getElementById('fWorkMode').value = app.workMode || '';
+  document.getElementById('fAppDate').value = app.applicationDate || '';
+  document.getElementById('fSource').value = app.source || '';
+  document.getElementById('fHrName').value = app.hrName || '';
+  document.getElementById('fHrEmail').value = app.hrEmail || '';
+  document.getElementById('fHrPhone').value = app.hrPhone || '';
+  document.getElementById('fStatus').value = app.status || 'Applied';
+  document.getElementById('fRound').value = app.interviewRound || 'Not Started';
+  document.getElementById('fIntDate').value = app.interviewDate || '';
+  document.getElementById('fIntTime').value = app.interviewTime || '';
+  document.getElementById('fSalary').value = app.salary || '';
+  document.getElementById('fFollowDate').value = app.followUpDate || '';
+  document.getElementById('fFollowStatus').value = app.followUpStatus || 'Not Due';
+  document.getElementById('fOfferStatus').value = app.offerStatus || 'Not Applicable';
+  document.getElementById('fNotes').value = app.notes || '';
+  document.getElementById('formTitle').textContent = 'Edit Application';
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) saveBtn.innerHTML = '<i class="fas fa-check"></i> Update Application';
+  navigateTo('add');
+}
+
+function viewApp(id) {
+  const app = applications.find(a => a.id === id);
+  if (!app) return;
+  const body = document.getElementById('viewModalBody');
+  body.innerHTML = [
+    ['Application ID', app.id],
+    ['Company', app.company],
+    ['Job Title', app.jobTitle],
+    ['Location', app.location],
+    ['Work Mode', app.workMode],
+    ['Application Date', formatDate(app.applicationDate)],
+    ['Source', app.source],
+    ['Status', app.status],
+    ['Interview Round', app.interviewRound],
+    ['Interview Date', formatDate(app.interviewDate)],
+    ['Interview Time', app.interviewTime],
+    ['HR Name', app.hrName],
+    ['HR Email', app.hrEmail],
+    ['HR Phone', app.hrPhone],
+    ['Expected Salary', app.salary],
+    ['Follow-up Date', formatDate(app.followUpDate)],
+    ['Follow-up Status', app.followUpStatus],
+    ['Offer Status', app.offerStatus],
+    ['Notes', app.notes]
+  ].map(([l, v]) => `<div class="detail-row"><div class="dl">${l}</div><div class="dv">${esc(v || '—')}</div></div>`).join('');
+
+  document.getElementById('viewEditBtn').onclick = () => { closeModal(); editApp(id); };
+  document.getElementById('viewModal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('viewModal').classList.remove('show');
+}
+
+function deleteApp(id) {
+  showConfirm('Delete this application? This cannot be undone.', () => {
+    applications = applications.filter(a => a.id !== id);
+    saveApplications();
+    renderAll();
+    toast('Application deleted');
+  });
+}
+
+function showConfirm(msg, cb) {
+  document.getElementById('confirmBody').textContent = msg;
+  confirmCallback = cb;
+  document.getElementById('confirmModal').classList.add('show');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('show');
+  confirmCallback = null;
+}
+
+document.getElementById('confirmYes')?.addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+});
+
+// ---------- Interviews ----------
+function renderInterviews() {
+  const withInterview = applications
+    .filter(a => a.interviewDate || (a.interviewRound && a.interviewRound !== 'Not Started'))
+    .sort((a, b) => (a.interviewDate || '9999').localeCompare(b.interviewDate || '9999'));
+
+  const tbody = document.getElementById('interviewsBody');
+  if (!withInterview.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No interviews scheduled</td></tr>';
+    return;
+  }
+  const today = todayStr();
+  tbody.innerHTML = withInterview.map(a => {
+    const upcoming = a.interviewDate && a.interviewDate >= today;
+    return `
+      <tr style="${upcoming ? 'background:rgba(67,97,238,0.06)' : ''}">
+        <td>${esc(a.company)}</td>
+        <td>${esc(a.jobTitle)}</td>
+        <td>${esc(a.interviewRound || '—')}</td>
+        <td>${formatDate(a.interviewDate)}</td>
+        <td>${esc(a.interviewTime || '—')}</td>
+        <td>${statusBadge(a.status)}</td>
+        <td>${esc((a.notes || '').slice(0, 60))}${(a.notes || '').length > 60 ? '…' : ''}</td>
+        <td class="actions-cell">
+          <button class="btn-icon" title="Edit" onclick="editApp('${a.id}')"><i class="fas fa-edit"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ---------- Follow-ups ----------
+function renderFollowUps() {
+  const today = todayStr();
+  const pending = applications.filter(a => {
+    if (!a.followUpDate) return false;
+    const st = (a.followUpStatus || '').toLowerCase();
+    return st !== 'completed' && st !== 'no response needed';
+  });
+
+  const overdue = pending.filter(a => a.followUpDate < today).sort((a, b) => a.followUpDate.localeCompare(b.followUpDate));
+  const todayList = pending.filter(a => a.followUpDate === today);
+  const future = pending.filter(a => a.followUpDate > today).sort((a, b) => a.followUpDate.localeCompare(b.followUpDate));
+
+  renderFollowupList('overdueFollowups', overdue, '🔴');
+  renderFollowupList('todayFollowups', todayList, '🟡');
+  renderFollowupList('futureFollowups', future, '🟢');
+}
+
+function renderFollowupList(elId, list, icon) {
+  const el = document.getElementById(elId);
+  if (!list.length) {
+    el.innerHTML = '<div class="empty-state">None</div>';
+    return;
+  }
+  el.innerHTML = list.map(a => `
+    <div class="followup-item">
+      <div class="fi-info">
+        <div class="fi-company">${icon} ${esc(a.company)} — ${esc(a.jobTitle)}</div>
+        <div class="fi-meta">${formatDate(a.followUpDate)} · ${esc(a.hrName || '')} · ${esc(a.hrPhone || a.hrEmail || '')}</div>
+        ${a.notes ? `<div class="fi-meta">${esc(a.notes.slice(0, 80))}</div>` : ''}
+      </div>
+      <button class="btn btn-sm btn-success" onclick="markFollowupDone('${a.id}')">Mark Done</button>
+      <button class="btn-icon" onclick="editApp('${a.id}')"><i class="fas fa-edit"></i></button>
+    </div>
+  `).join('');
+}
+
+function markFollowupDone(id) {
+  const app = applications.find(a => a.id === id);
+  if (!app) return;
+  app.followUpStatus = 'Completed';
+  saveApplications();
+  renderAll();
+  toast('Follow-up marked as completed');
+}
+
+// ---------- Kanban Pipeline ----------
+const KANBAN_COLUMNS = [
+  { key: 'Applied', match: s => s === 'applied' || s === 'wishlist' || s.includes('submitted') },
+  { key: 'Screening', match: s => s.includes('screening') },
+  { key: 'Interviewing', match: s => s === 'interviewing' || s.includes('1st') || s.includes('2nd') || s.includes('managerial') || s.includes('hr round') },
+  { key: 'Technical', match: s => s.includes('technical') },
+  { key: 'Final Round', match: s => s.includes('final') },
+  { key: 'Offer', match: s => s.includes('offer') || s === 'accepted' },
+  { key: 'Rejected', match: s => s === 'rejected' || s === 'withdrawn' || s === 'on hold' }
+];
+
+function renderKanban() {
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = KANBAN_COLUMNS.map(col => {
+    const cards = applications.filter(a => col.match((a.status || '').toLowerCase()));
+    return `
+      <div class="kanban-col" data-status="${col.key}" ondragover="event.preventDefault()" ondrop="kanbanDrop(event, '${col.key}')">
+        <div class="kanban-col-header">
+          <span>${col.key}</span>
+          <span class="kanban-count">${cards.length}</span>
+        </div>
+        ${cards.map(a => `
+          <div class="kanban-card" draggable="true" data-id="${a.id}"
+               ondragstart="kanbanDrag(event)" ondragend="this.classList.remove('dragging')">
+            <div class="kc-company">${esc(a.company)}</div>
+            <div class="kc-title">${esc(a.jobTitle)}</div>
+            <div class="kc-loc">${esc(a.location || '')}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+function kanbanDrag(e) {
+  e.target.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', e.target.dataset.id);
+}
+
+function kanbanDrop(e, colKey) {
+  e.preventDefault();
+  const id = e.dataTransfer.getData('text/plain');
+  const app = applications.find(a => a.id === id);
+  if (!app) return;
+
+  const statusMap = {
+    'Applied': 'Applied',
+    'Screening': 'HR Screening',
+    'Interviewing': 'Interviewing',
+    'Technical': 'Technical Round',
+    'Final Round': 'Final Round',
+    'Offer': 'Offer Received',
+    'Rejected': 'Rejected'
+  };
+  app.status = statusMap[colKey] || colKey;
+  saveApplications();
+  renderKanban();
+  updateNotifBadge();
+  toast(`Moved to ${colKey}`);
+}
+
+// ---------- Analytics ----------
+/**
+ * Analytics page — always uses the FULL current-user applications array.
+ * No company/status/location filters. No Reset Filter UI.
+ * Multi-user isolation is handled by loadApplications() (current user only).
+ */
+function renderAnalytics() {
+  // Always full dataset for the logged-in user — never dashFilter
+  const apps = applications;
+  const k = getKPIs(apps);
+  const colors = getChartColors();
+
+  const grid = document.getElementById('analyticsKpis');
+  if (grid) {
+    grid.innerHTML = `
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon-box blue"><i class="fas fa-folder"></i></div><span class="kpi-label">Total</span></div><div class="kpi-value">${k.total}</div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon-box purple"><i class="fas fa-percentage"></i></div><span class="kpi-label">Response Rate</span></div><div class="kpi-value">${k.responseRate}%</div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon-box orange"><i class="fas fa-comments"></i></div><span class="kpi-label">Interview Conv.</span></div><div class="kpi-value">${k.interviewConversion}%</div></div>
+      <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon-box green"><i class="fas fa-trophy"></i></div><span class="kpi-label">Offer Conv.</span></div><div class="kpi-value">${k.offerConversion}%</div></div>
+    `;
+  }
+
+  // Status doughnut
+  destroyChart('aStatus');
+  const statusCounts = {};
+  apps.forEach(a => {
+    const s = a.status || 'Unknown';
+    statusCounts[s] = (statusCounts[s] || 0) + 1;
+  });
+  const statusLabels = Object.keys(statusCounts);
+  const statusData = Object.values(statusCounts);
+  const statusCanvas = document.getElementById('analyticsStatusChart');
+  if (statusCanvas) {
+    charts.aStatus = new Chart(statusCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: statusLabels,
+        datasets: [{
+          data: statusData,
+          backgroundColor: colors.palette.slice(0, Math.max(statusLabels.length, 1)),
+          borderWidth: 2,
+          borderColor: document.documentElement.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: colors.text, boxWidth: 12, font: { size: 11 } } }
+        }
+        // No onClick filter — analytics is always full dataset
+      }
+    });
+  }
+
+  // Location bar
+  destroyChart('aLocation');
+  const locCounts = {};
+  apps.forEach(a => {
+    const loc = normalizeLocation(a.location);
+    locCounts[loc] = (locCounts[loc] || 0) + 1;
+  });
+  const locLabels = Object.keys(locCounts).sort((a, b) => locCounts[b] - locCounts[a]);
+  const locData = locLabels.map(l => locCounts[l]);
+  const locCanvas = document.getElementById('analyticsLocationChart');
+  if (locCanvas) {
+    charts.aLocation = new Chart(locCanvas, {
+      type: 'bar',
+      data: {
+        labels: locLabels,
+        datasets: [{ label: 'Applications', data: locData, backgroundColor: colors.palette[0], borderRadius: 6 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: colors.text }, grid: { display: false } },
+          y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Month line
+  destroyChart('aMonth');
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthCounts = new Array(12).fill(0);
+  apps.forEach(a => {
+    if (a.applicationDate) {
+      const m = parseInt(a.applicationDate.slice(5, 7), 10) - 1;
+      if (m >= 0 && m < 12) monthCounts[m]++;
+    }
+  });
+  const monthCanvas = document.getElementById('analyticsMonthChart');
+  if (monthCanvas) {
+    charts.aMonth = new Chart(monthCanvas, {
+      type: 'line',
+      data: {
+        labels: monthNames,
+        datasets: [{
+          label: 'Applications',
+          data: monthCounts,
+          borderColor: colors.palette[0],
+          backgroundColor: colors.palette[0] + '33',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: colors.text }, grid: { display: false } },
+          y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Top companies
+  destroyChart('aCompany');
+  const companyCounts = {};
+  apps.forEach(a => {
+    const c = a.company || 'Unknown';
+    companyCounts[c] = (companyCounts[c] || 0) + 1;
+  });
+  const sortedCompanies = Object.entries(companyCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  const compLabels = sortedCompanies.map(c => c[0]);
+  const compData = sortedCompanies.map(c => c[1]);
+  const compCanvas = document.getElementById('analyticsCompanyChart');
+  if (compCanvas) {
+    charts.aCompany = new Chart(compCanvas, {
+      type: 'bar',
+      data: {
+        labels: compLabels,
+        datasets: [{ label: 'Applications', data: compData, backgroundColor: colors.palette[1], borderRadius: 6 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true },
+          y: { ticks: { color: colors.text }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Pipeline
+  destroyChart('aPipeline');
+  const pipelineOrder = ['Applied', 'HR Screening', 'Interviewing', 'Technical Round', 'Final Round', 'Offer Received', 'Accepted'];
+  const pipelineCounts = pipelineOrder.map(stage => {
+    return apps.filter(a => {
+      const s = (a.status || '').toLowerCase();
+      if (stage === 'Applied') return s === 'applied' || s === 'wishlist' || s.includes('submitted');
+      if (stage === 'HR Screening') return s.includes('screening');
+      if (stage === 'Interviewing') return s === 'interviewing' || s.includes('1st') || s.includes('2nd') || s.includes('managerial') || s.includes('hr round');
+      if (stage === 'Technical Round') return s.includes('technical');
+      if (stage === 'Final Round') return s.includes('final');
+      if (stage === 'Offer Received') return s.includes('offer');
+      if (stage === 'Accepted') return s === 'accepted';
+      return false;
+    }).length;
+  });
+  const pipeCanvas = document.getElementById('analyticsPipelineChart');
+  if (pipeCanvas) {
+    charts.aPipeline = new Chart(pipeCanvas, {
+      type: 'bar',
+      data: {
+        labels: pipelineOrder,
+        datasets: [{
+          label: 'Count',
+          data: pipelineCounts,
+          backgroundColor: ['#4361ee', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899', '#10b981', '#059669'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: colors.text, maxRotation: 45 }, grid: { display: false } },
+          y: { ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Insights — full user dataset
+  const insights = [];
+  if (k.total === 0) {
+    insights.push('No applications yet. Add applications to see insights.');
+  } else {
+    insights.push(`Interview conversion rate: ${k.interviewConversion}%. Offer conversion: ${k.offerConversion}%.`);
+    const topLoc = Object.entries(locCounts).sort((a, b) => b[1] - a[1])[0];
+    if (topLoc) insights.push(`Highest number of applications are in ${topLoc[0]} (${topLoc[1]} apps).`);
+    const topCo = sortedCompanies[0];
+    if (topCo) insights.push(`Most applied company: ${topCo[0]} (${topCo[1]} application${topCo[1] > 1 ? 's' : ''}).`);
+    const srcCounts = {};
+    apps.forEach(a => {
+      const src = a.source || 'Other';
+      srcCounts[src] = (srcCounts[src] || 0) + 1;
+    });
+    const topSrc = Object.entries(srcCounts).sort((a, b) => b[1] - a[1])[0];
+    if (topSrc) insights.push(`Most common application source: ${topSrc[0]}.`);
+    insights.push(`Response rate: ${k.responseRate}% (${k.responded} of ${k.total} applications received a response).`);
+  }
+  const insightsEl = document.getElementById('analyticsInsightsList');
+  if (insightsEl) {
+    insightsEl.innerHTML = insights.map(i =>
+      `<div class="insight-item"><i class="fas fa-lightbulb"></i>${esc(i)}</div>`
+    ).join('');
+  }
+}
+
+// ---------- Export / Import ----------
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(applications, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, `job-applications-backup-${todayStr()}.json`);
+  toast('JSON backup downloaded');
+}
+
+function exportCSV() {
+  const headers = ['id','applicationDate','company','jobTitle','location','workMode','hrName','hrPhone','hrEmail','source','status','interviewRound','interviewDate','interviewTime','salary','followUpDate','followUpStatus','offerStatus','notes'];
+  const rows = applications.map(a => headers.map(h => {
+    let v = a[h] || '';
+    if (typeof v === 'string' && (v.includes(',') || v.includes('"') || v.includes('\n'))) {
+      v = '"' + v.replace(/"/g, '""') + '"';
+    }
+    return v;
+  }).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  downloadBlob(new Blob([csv], { type: 'text/csv' }), `job-applications-${todayStr()}.csv`);
+  toast('CSV exported');
+}
+
+function exportExcel() {
+  const ws = XLSX.utils.json_to_sheet(applications.map(a => ({
+    'Application ID': a.id,
+    'Application Date': a.applicationDate,
+    'Company Name': a.company,
+    'Job Title / Position': a.jobTitle,
+    'Job Location': a.location,
+    'Work Mode': a.workMode,
+    'Recruiter / HR Name': a.hrName,
+    'HR Contact Number': a.hrPhone,
+    'HR Email': a.hrEmail,
+    'Application Source': a.source,
+    'Application Status': a.status,
+    'Current Interview Round': a.interviewRound,
+    'Interview Date': a.interviewDate,
+    'Interview Time': a.interviewTime,
+    'Expected Salary': a.salary,
+    'Next Follow-up Date': a.followUpDate,
+    'Follow-up Status': a.followUpStatus,
+    'Offer Status': a.offerStatus,
+    'Notes / Remarks': a.notes
+  })));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Job Applications');
+  XLSX.writeFile(wb, `job-applications-${todayStr()}.xlsx`);
+  toast('Excel exported');
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function setupImport() {
+  document.getElementById('importFile')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    try {
+      if (name.endsWith('.json')) {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!Array.isArray(data)) throw new Error('Invalid JSON format');
+        mergeImport(data);
+      } else if (name.endsWith('.csv')) {
+        const text = await file.text();
+        const data = parseCSV(text);
+        mergeImport(data);
+      } else if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf);
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws);
+        const mapped = rows.map(mapExcelRow);
+        mergeImport(mapped);
+      } else {
+        toast('Unsupported file type', 'error');
+      }
+    } catch (err) {
+      toast('Import failed: ' + err.message, 'error');
+    }
+    e.target.value = '';
+  });
+}
+
+function mapExcelRow(row) {
+  return {
+    id: row['Application ID'] || row.id || generateId(),
+    applicationDate: normalizeDate(row['Application Date'] || row.applicationDate),
+    company: row['Company Name'] || row.company || '',
+    jobTitle: row['Job Title / Position'] || row.jobTitle || '',
+    location: row['Job Location'] || row.location || '',
+    workMode: row['Work Mode'] || row.workMode || '',
+    hrName: row['Recruiter / HR Name'] || row.hrName || '',
+    hrPhone: String(row['HR Contact Number'] || row.hrPhone || ''),
+    hrEmail: row['HR Email'] || row.hrEmail || '',
+    source: row['Application Source'] || row.source || '',
+    status: row['Application Status'] || row.status || 'Applied',
+    interviewRound: row['Current Interview Round'] || row.interviewRound || 'Not Started',
+    interviewDate: normalizeDate(row['Interview Date'] || row.interviewDate),
+    interviewTime: normalizeTime(row['Interview Time'] || row.interviewTime),
+    salary: String(row['Expected Salary'] || row.salary || ''),
+    followUpDate: normalizeDate(row['Next Follow-up Date'] || row.followUpDate),
+    followUpStatus: row['Follow-up Status'] || row.followUpStatus || 'Not Due',
+    offerStatus: row['Offer Status'] || row.offerStatus || 'Not Applicable',
+    notes: row['Notes / Remarks'] || row.notes || ''
+  };
+}
+
+function normalizeDate(v) {
+  if (!v) return '';
+  if (typeof v === 'number') {
+    // Excel serial date
+    const d = XLSX.SSF ? null : null;
+    const date = new Date((v - 25569) * 86400 * 1000);
+    if (!isNaN(date)) return date.toISOString().slice(0, 10);
+  }
+  if (typeof v === 'string') {
+    const m = v.match(/(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[0];
+    const d = new Date(v);
+    if (!isNaN(d)) return d.toISOString().slice(0, 10);
+  }
+  return '';
+}
+
+function normalizeTime(v) {
+  if (!v) return '';
+  if (typeof v === 'number') {
+    const totalSec = Math.round(v * 86400);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+  if (typeof v === 'string') {
+    const m = v.match(/(\d{1,2}):(\d{2})/);
+    if (m) return `${m[1].padStart(2, '0')}:${m[2]}`;
+  }
+  return String(v);
+}
+
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  return lines.slice(1).map(line => {
+    const vals = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; continue; }
+      if (c === ',' && !inQ) { vals.push(cur); cur = ''; continue; }
+      cur += c;
+    }
+    vals.push(cur);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    return mapExcelRow(obj);
+  });
+}
+
+function mergeImport(data) {
+  let added = 0, updated = 0;
+  data.forEach(item => {
+    if (!item.company && !item.jobTitle) return;
+    if (!item.id) item.id = generateId();
+    const idx = applications.findIndex(a => a.id === item.id);
+    if (idx >= 0) {
+      applications[idx] = { ...applications[idx], ...item };
+      updated++;
+    } else {
+      applications.push(item);
+      added++;
+    }
+  });
+  saveApplications();
+  renderAll();
+  toast(`Imported: ${added} added, ${updated} updated`);
+}
+
+function clearAllData() {
+  showConfirm('Delete ALL applications? This cannot be undone.', () => {
+    applications = [];
+    saveApplications();
+    renderAll();
+    toast('All data cleared');
+  });
+}
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', (e) => {
+    if (e.target === m) {
+      m.classList.remove('show');
+      confirmCallback = null;
+    }
+  });
+});
+
+</script>
+</body>
+</html>
